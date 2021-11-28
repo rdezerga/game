@@ -3336,109 +3336,6 @@ C3.CanvasToBlob(canvas)).then(blob=>{const url=URL.createObjectURL(blob);const c
 }
 
 {
-'use strict';const C3=self.C3;C3.Plugins.Shape3D=class Shape3DPlugin extends C3.SDKPluginBase{constructor(opts){super(opts)}Release(){super.Release()}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.Shape3D.Type=class Shape3DType extends C3.SDKTypeBase{constructor(objectClass){super(objectClass);this._animations=objectClass.GetAnimations()}Release(){C3.clearArray(this._animations);super.Release()}OnCreate(){for(const a of this._animations)a.LoadAllAssets(this._runtime)}LoadTextures(renderer){const opts={sampling:this._runtime.GetSampling()};return Promise.all(this._animations.map(a=>a.LoadAllTextures(renderer,opts)))}ReleaseTextures(){for(const a of this._animations)a.ReleaseAllTextures()}};
-
-}
-
-{
-'use strict';const C3=self.C3;const C3X=self.C3X;const SHAPE=0;const ZHEIGHT=1;const INITIALLY_VISIBLE=2;const FACE_BACK=3;const FACE_FRONT=4;const FACE_LEFT=5;const FACE_RIGHT=6;const FACE_TOP=7;const FACE_BOTTOM=8;const Z_TILING_FACTOR=9;const OBJECT_FACE_BACK=10;const OBJECT_FACE_FRONT=11;const OBJECT_FACE_LEFT=12;const OBJECT_FACE_RIGHT=13;const OBJECT_FACE_TOP=14;const OBJECT_FACE_BOTTOM=15;const tempQuad=C3.New(C3.Quad);const tempVec2=C3.New(C3.Vector2);
-function distanceTo3D(x1,y1,z1,x2,y2,z2,zScale){return Math.hypot(x2-x1,y2-y1,(z2-z1)*zScale)}function lerp3d(x1,y1,z1,x2,y2,z2,f){return[C3.lerp(x1,x2,f),C3.lerp(y1,y2,f),C3.lerp(z1,z2,f)]}function lerp3d2(x,y,z,ax,ay,az,bx,by,bz,af,bf){const [tx,ty,tz]=lerp3d(x,y,z,ax,ay,az,af);return lerp3d(tx,ty,tz,tx+(bx-x),ty+(by-y),tz+(bz-z),bf)}
-C3.Plugins.Shape3D.Instance=class Shape3DInstance extends C3.SDKWorldInstanceBase{constructor(inst,properties){super(inst);this._shape=0;this._zHeight=15;let initiallyVisible=true;this._showBackFace=false;this._showFrontFace=true;this._showLeftFace=true;this._showRightFace=true;this._showTopFace=true;this._showBottomFace=true;this._animation=this._objectClass.GetAnimations()[0];this._faceVisibility=[false,true,true,true,true,true];this._faceImages=[0,1,2,3,4,5];this._zTilingFactor=8;this._faceObjects=
-[null,null,null,null,null,null];if(properties){this._shape=properties[SHAPE];this._zHeight=properties[ZHEIGHT];initiallyVisible=!!properties[INITIALLY_VISIBLE];this._faceVisibility[0]=!!properties[FACE_BACK];this._faceVisibility[1]=!!properties[FACE_FRONT];this._faceVisibility[2]=!!properties[FACE_LEFT];this._faceVisibility[3]=!!properties[FACE_RIGHT];this._faceVisibility[4]=!!properties[FACE_TOP];this._faceVisibility[5]=!!properties[FACE_BOTTOM];this._zTilingFactor=properties[Z_TILING_FACTOR];this._SetFaceObjectClass(0,
-this._runtime.GetObjectClassBySID(properties[OBJECT_FACE_BACK]));this._SetFaceObjectClass(1,this._runtime.GetObjectClassBySID(properties[OBJECT_FACE_FRONT]));this._SetFaceObjectClass(2,this._runtime.GetObjectClassBySID(properties[OBJECT_FACE_LEFT]));this._SetFaceObjectClass(3,this._runtime.GetObjectClassBySID(properties[OBJECT_FACE_RIGHT]));this._SetFaceObjectClass(4,this._runtime.GetObjectClassBySID(properties[OBJECT_FACE_TOP]));this._SetFaceObjectClass(5,this._runtime.GetObjectClassBySID(properties[OBJECT_FACE_BOTTOM]))}const wi=
-this.GetWorldInfo();wi.SetDepth(this._zHeight);this._bquadRef=wi.GetBoundingQuad();wi.SetVisible(initiallyVisible);const baseFrame=this.GetBaseAnimationFrame();wi.SetOriginX(baseFrame.GetOriginX());wi.SetOriginY(baseFrame.GetOriginY());wi.SetBboxChanged()}Release(){super.Release()}GetBaseAnimationFrame(){return this._animation.GetFrameAt(0)}GetCurrentImageInfo(){return this.GetBaseAnimationFrame().GetImageInfo()}IsOriginalSizeKnown(){return true}Draw(renderer){const wi=this.GetWorldInfo();let q=this._bquadRef;
-if(this._runtime.IsPixelRoundingEnabled())q=wi.PixelRoundQuad(q);const tlx=q.getTlx();const tly=q.getTly();const trx=q.getTrx();const try_=q.getTry();const brx=q.getBrx();const bry=q.getBry();const blx=q.getBlx();const bly=q.getBly();const shape=this._shape;const h=this._zHeight;const faceVisibility=this._faceVisibility;let showBackFace=faceVisibility[0];let showFrontFace=faceVisibility[1];let showLeftFace=faceVisibility[2];let showRightFace=faceVisibility[3];let showTopFace=faceVisibility[4];let showBottomFace=
-faceVisibility[5];if(wi.IsDrawBackFaceOnly()){showFrontFace=false;showLeftFace=false;showRightFace=false;showTopFace=false;showBottomFace=false}else if(wi.IsDrawNonBackFacesOnly())showBackFace=false;if(showBackFace)this._DrawFace(renderer,0,tlx,tly,0,trx,try_,0,brx,bry,0,blx,bly,0,0);if(shape===0){if(showLeftFace)this._DrawFace(renderer,2,tlx,tly,h,blx,bly,h,blx,bly,0,tlx,tly,0,0);if(showRightFace)this._DrawFace(renderer,3,brx,bry,h,trx,try_,h,trx,try_,0,brx,bry,0,0);if(showTopFace)this._DrawFace(renderer,
-4,trx,try_,h,tlx,tly,h,tlx,tly,0,trx,try_,0,0);if(showBottomFace)this._DrawFace(renderer,5,blx,bly,h,brx,bry,h,brx,bry,0,blx,bly,0,0);if(showFrontFace)this._DrawFace(renderer,1,tlx,tly,h,trx,try_,h,brx,bry,h,blx,bly,h,0)}else if(shape===1){const rlx=(tlx+blx)/2;const rly=(tly+bly)/2;const rrx=(trx+brx)/2;const rry=(try_+bry)/2;if(showLeftFace)this._DrawFace(renderer,2,rlx,rly,h,rlx,rly,h,blx,bly,0,tlx,tly,0,4);if(showRightFace)this._DrawFace(renderer,3,rrx,rry,h,rrx,rry,h,trx,try_,0,brx,bry,0,4);
-if(showTopFace)this._DrawFace(renderer,4,rrx,rry,h,rlx,rly,h,tlx,tly,0,trx,try_,0,0);if(showBottomFace)this._DrawFace(renderer,5,rlx,rly,h,rrx,rry,h,brx,bry,0,blx,bly,0,0)}else if(shape===2){if(showLeftFace)this._DrawFace(renderer,2,trx,try_,h,brx,bry,h,blx,bly,0,tlx,tly,0,0);if(showRightFace)this._DrawFace(renderer,3,brx,bry,h,trx,try_,h,trx,try_,0,brx,bry,0,0);if(showTopFace)this._DrawFace(renderer,4,trx,try_,h,trx,try_,h,tlx,tly,0,trx,try_,0,2);if(showBottomFace)this._DrawFace(renderer,5,brx,bry,
-h,brx,bry,h,brx,bry,0,blx,bly,0,3)}else if(shape===3){const midX=q.midX();const midY=q.midY();if(showLeftFace)this._DrawFace(renderer,2,midX,midY,h,midX,midY,h,blx,bly,0,tlx,tly,0,4);if(showRightFace)this._DrawFace(renderer,3,midX,midY,h,midX,midY,h,trx,try_,0,brx,bry,0,4);if(showTopFace)this._DrawFace(renderer,4,midX,midY,h,midX,midY,h,tlx,tly,0,trx,try_,0,4);if(showBottomFace)this._DrawFace(renderer,5,midX,midY,h,midX,midY,h,brx,bry,0,blx,bly,0,4)}else if(shape===4){if(showLeftFace)this._DrawFace(renderer,
-2,trx,try_,h,trx,try_,h,blx,bly,0,tlx,tly,0,2);if(showRightFace)this._DrawFace(renderer,3,trx,try_,h,trx,try_,h,trx,try_,0,brx,bry,0,3);if(showTopFace)this._DrawFace(renderer,4,trx,try_,h,trx,try_,h,tlx,tly,0,trx,try_,0,2);if(showBottomFace)this._DrawFace(renderer,5,trx,try_,h,trx,try_,h,brx,bry,0,blx,bly,0,3)}else if(shape===5){if(showLeftFace)this._DrawFace(renderer,2,tlx,tly,h,tlx,tly,h,blx,bly,0,tlx,tly,0,2);if(showRightFace)this._DrawFace(renderer,3,brx,bry,h,trx,try_,h,trx,try_,0,brx,bry,0,
-0);if(showTopFace)this._DrawFace(renderer,4,trx,try_,h,tlx,tly,h,tlx,tly,0,trx,try_,0,0);if(showBottomFace)this._DrawFace(renderer,5,brx,bry,h,brx,bry,h,brx,bry,0,blx,bly,0,3);if(showFrontFace)this._DrawFace(renderer,1,tlx,tly,h,trx,try_,h,brx,bry,h,blx,bly,0,1)}}_DrawFace(renderer,i,tlx,tly,tlz,trx,try_,trz,brx,bry,brz,blx,bly,blz,shape){let texture=null;let quadTex=null;let preCalculatedQuadTexCoords=false;const faceObjectClass=this._faceObjects[i];if(faceObjectClass!==null){const inst=faceObjectClass.GetPairedInstance(this.GetInstance());
-if(!inst)return;const sdkInst=inst.GetSdkInstance();if(C3.Plugins.Sprite&&sdkInst instanceof C3.Plugins.Sprite.Instance){texture=sdkInst.GetTexture();if(texture===null)return;quadTex=sdkInst.GetTexQuad()}else if(C3.Plugins.TiledBg&&sdkInst instanceof C3.Plugins.TiledBg.Instance||C3.Plugins.NinePatch&&sdkInst instanceof C3.Plugins.NinePatch.Instance){let areaWidth=0;let areaHeight=0;const zTilingFactor=this._zTilingFactor;switch(shape){case 0:case 1:areaWidth=distanceTo3D(tlx,tly,tlz,trx,try_,trz,
-zTilingFactor);areaHeight=distanceTo3D(trx,try_,trz,brx,bry,brz,zTilingFactor);break;case 2:areaWidth=distanceTo3D(blx,bly,blz,brx,bry,brz,zTilingFactor);areaHeight=distanceTo3D(tlx,tly,tlz,blx,bly,blz,zTilingFactor);break;case 3:areaWidth=distanceTo3D(blx,bly,blz,brx,bry,brz,zTilingFactor);areaHeight=distanceTo3D(trx,try_,trz,brx,bry,brz,zTilingFactor);break;case 4:areaWidth=distanceTo3D(blx,bly,blz,brx,bry,brz,zTilingFactor);areaHeight=distanceTo3D(tlx,tly,tlz,(blx+brx)/2,(bly+bry)/2,(blz+brz)/
-2,zTilingFactor);break}if(C3.Plugins.TiledBg&&sdkInst instanceof C3.Plugins.TiledBg.Instance){texture=sdkInst.GetTexture();if(texture===null)return;sdkInst.CalculateTextureCoordsFor3DFace(areaWidth,areaHeight,tempQuad);preCalculatedQuadTexCoords=true}else{if(shape!==0)return;sdkInst._Set3DCallback((drawRect,texRect)=>{drawRect.divide(areaWidth,areaHeight);const lf=drawRect.getLeft();const tf=drawRect.getTop();const rf=drawRect.getRight();const bf=drawRect.getBottom();const [ntlx,ntly,ntlz]=lerp3d2(tlx,
-tly,tlz,trx,try_,trz,blx,bly,blz,lf,tf);const [ntrx,ntry,ntrz]=lerp3d2(tlx,tly,tlz,trx,try_,trz,blx,bly,blz,rf,tf);const [nbrx,nbry,nbrz]=lerp3d2(tlx,tly,tlz,trx,try_,trz,blx,bly,blz,rf,bf);const [nblx,nbly,nblz]=lerp3d2(tlx,tly,tlz,trx,try_,trz,blx,bly,blz,lf,bf);renderer.Quad3D(ntlx,ntly,ntlz,ntrx,ntry,ntrz,nbrx,nbry,nbrz,nblx,nbly,nblz,texRect)});sdkInst._Draw(renderer,0,0,areaWidth,areaHeight);sdkInst._Set3DCallback(null);return}}else return}else{i=this._faceImages[i];const frame=this._animation.GetFrameAt(i);
-const imageInfo=frame.GetImageInfo();texture=imageInfo.GetTexture();if(texture===null)return;quadTex=imageInfo.GetTexQuad()}renderer.SetTexture(texture);if(shape>=3||preCalculatedQuadTexCoords){if(!preCalculatedQuadTexCoords)tempQuad.copy(quadTex);if(shape===3){tempQuad.setTlx(tempQuad.getTrx());tempQuad.setTly(tempQuad.getTly())}else if(shape===4){tempQuad.setTlx((tempQuad.getTlx()+tempQuad.getTrx())/2);tempQuad.setTly((tempQuad.getTly()+tempQuad.getTry())/2)}renderer.Quad3D2(tlx,tly,tlz,trx,try_,
-trz,brx,bry,brz,blx,bly,blz,tempQuad)}else renderer.Quad3D2(tlx,tly,tlz,trx,try_,trz,brx,bry,brz,blx,bly,blz,quadTex)}RendersToOwnZPlane(){return this._IsFaceVisible(0)}GetImagePointCount(){return this.GetBaseAnimationFrame().GetImagePointCount()}GetImagePoint(nameOrIndex){const frame=this.GetBaseAnimationFrame();const wi=this.GetWorldInfo();let ip=null;if(typeof nameOrIndex==="string")ip=frame.GetImagePointByName(nameOrIndex);else if(typeof nameOrIndex==="number")ip=frame.GetImagePointByIndex(nameOrIndex-
-1);else throw new TypeError("expected string or number");if(!ip)return[wi.GetX(),wi.GetY()];tempVec2.copy(ip.GetVec2());if(wi.HasMesh()){const [tx,ty]=wi.GetSourceMesh().TransformPoint(tempVec2.getX(),tempVec2.getY());tempVec2.set(tx,ty)}tempVec2.offset(-frame.GetOriginX(),-frame.GetOriginY());tempVec2.scale(wi.GetWidth(),wi.GetHeight());tempVec2.rotate(wi.GetAngle());tempVec2.offset(wi.GetX(),wi.GetY());return[tempVec2.getX(),tempVec2.getY()]}_SetShape(s){if(this._shape===s)return;this._shape=s;
-this._runtime.UpdateRender()}_GetShape(){return this._shape}_SetZHeight(h){h=Math.max(h,0);if(this._zHeight===h)return;this._zHeight=h;this.GetWorldInfo().SetDepth(h);this._runtime.UpdateRender()}_GetZHeight(){return this._zHeight}_SetFaceVisible(face,v){v=!!v;if(this._faceVisibility[face]===v)return;this._faceVisibility[face]=v;this._runtime.UpdateRender()}_IsFaceVisible(face){return this._faceVisibility[face]}_SetFaceImage(face,image){const faceImages=this._faceImages;const faceObjects=this._faceObjects;
-if(faceImages[face]===image&&faceObjects[face]===null)return;faceImages[face]=image;faceObjects[face]=null;this._runtime.UpdateRender()}_SetFaceObjectClass(face,objectClass){if(objectClass!==null&&objectClass.IsFamily())objectClass=objectClass.GetFamilyMembers()[0];const faceObjects=this._faceObjects;if(faceObjects[face]===objectClass)return;faceObjects[face]=objectClass;this._runtime.UpdateRender()}_SetZTilingFactor(zf){if(this._zTilingFactor===zf)return;this._zTilingFactor=zf;this._runtime.UpdateRender()}_GetZTilingFactor(){return this._zTilingFactor}SaveToJson(){const o=
-{"s":this._shape,"zh":this._zHeight,"fv":this._faceVisibility,"fi":this._faceImages,"fo":this._faceObjects.map(t=>t?t.GetSID():-1),"zf":this._zTilingFactor};return o}LoadFromJson(o){this._shape=o["s"];this._zHeight=o["zh"];this.GetWorldInfo().SetDepth(this._zHeight);this._faceVisibility=o["fv"].slice(0);this._faceImages=o["fi"].slice(0);if(o.hasOwnProperty("fo"))this._faceObjects=o["fo"].map(sid=>this._runtime.GetObjectClassBySID(sid));if(o.hasOwnProperty("zf"))this._zTilingFactor=o["zf"]}GetPropertyValueByIndex(index){}SetPropertyValueByIndex(index,
-value){}GetScriptInterfaceClass(){return self.I3DShapeInstance}};const map=new WeakMap;const VALID_SHAPES=["box","prism","wedge","pyramid","corner-out","corner-in"];const VALID_FACES=["back","front","left","right","top","bottom"];
-self.I3DShapeInstance=class I3DShapeInstance extends self.IWorldInstance{constructor(){super();map.set(this,self.IInstance._GetInitInst().GetSdkInstance())}getImagePointCount(){return map.get(this).GetImagePointCount()}getImagePointX(nameOrIndex){if(typeof nameOrIndex!=="string"&&typeof nameOrIndex!=="number")throw new TypeError("expected string or number");return map.get(this).GetImagePoint(nameOrIndex)[0]}getImagePointY(nameOrIndex){if(typeof nameOrIndex!=="string"&&typeof nameOrIndex!=="number")throw new TypeError("expected string or number");
-return map.get(this).GetImagePoint(nameOrIndex)[1]}getImagePoint(nameOrIndex){if(typeof nameOrIndex!=="string"&&typeof nameOrIndex!=="number")throw new TypeError("expected string or number");return map.get(this).GetImagePoint(nameOrIndex)}set zHeight(h){C3X.RequireFiniteNumber(h);map.get(this)._SetZHeight(h)}get zHeight(){return map.get(this)._GetZHeight()}set shape(str){C3X.RequireString(str);const s=VALID_SHAPES.indexOf(str);if(s===-1)throw new TypeError("invalid shape");map.get(this)._SetShape(s)}get shape(){return VALID_SHAPES[map.get(this)._Getshape()]}setFaceVisible(faceStr,
-v){const face=VALID_FACES.indexOf(faceStr);if(face<0)throw new Error("invalid face");map.get(this)._SetFaceVisible(face,!!v)}isFaceVisible(faceStr){const face=VALID_FACES.indexOf(faceStr);if(face<0)throw new Error("invalid face");return map.get(this)._IsFaceVisible(face)}setFaceImage(faceStr,imageStr){const face=VALID_FACES.indexOf(faceStr);const image=VALID_FACES.indexOf(imageStr);if(face<0||image<0)throw new Error("invalid face");map.get(this)._SetFaceImage(face,image)}get zTilingFactor(){return map.get(this)._GetZTilingFactor()}set zTilingFactor(zf){C3X.RequireFiniteNumber(zf);
-map.get(this)._SetZTilingFactor(zf)}setFaceObject(faceStr,iObjectClass){const face=VALID_FACES.indexOf(faceStr);if(face<0)throw new Error("invalid face");const inst=map.get(this);const objectClass=inst.GetRuntime()._UnwrapIObjectClass(iObjectClass);inst._SetFaceObjectClass(face,objectClass)}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.Shape3D.Cnds={CompareShape(s){return this._GetShape()===s},CompareZHeight(cmp,zh){return C3.compare(this._GetZHeight(),cmp,zh)},IsFaceVisible(face){return this._IsFaceVisible(face)}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.Shape3D.Acts={SetShape(s){this._SetShape(s)},SetZHeight(zh){this._SetZHeight(zh)},SetFaceVisible(face,v){this._SetFaceVisible(face,v)},SetFaceImage(face,image){this._SetFaceImage(face,image)},SetZTilingFactor(zf){this._SetZTilingFactor(zf)},SetFaceObject(face,objectClass){this._SetFaceObjectClass(face,objectClass)}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.Shape3D.Exps={ZHeight(){return this._GetZHeight()},ZTilingFactor(){return this._GetZTilingFactor()}};
-
-}
-
-{
-'use strict';const C3=self.C3;
-C3.Plugins.SVGPicture=class SVGPicturePlugin extends C3.SDKPluginBase{constructor(opts){super(opts);this._rasterManager=null}Release(){super.Release()}_GetRasterManager(){if(!this._rasterManager){this._rasterManager=C3.New(C3.SVGRasterManager);this._rasterManager.SetGetBaseSizeCallback(filename=>this._GetSvgBaseSize(filename));this._rasterManager.SetRasterAtSizeCallback((sf,r,sw,sh,iw,ih)=>this._RasterSvgAtSize(sf,r,sw,sh,iw,ih));this._rasterManager.SetReleaseResultCallback(texture=>this._ReleaseRasterResult(texture));
-this._rasterManager.SetRedrawCallback(()=>this._Redraw());this._rasterManager.SetNpotSurfaceAllowed(this.GetRuntime().GetRenderer().SupportsNPOTTextures())}return this._rasterManager}async _GetSvgBaseSize(filename){const runtime=this.GetRuntime();const blob=await runtime.GetAssetManager().FetchBlob(filename);return await runtime.GetSvgImageSize(blob)}async _RasterSvgAtSize(filename,renderer,surfaceWidth,surfaceHeight,imageWidth,imageHeight){const runtime=this.GetRuntime();const blob=await runtime.GetAssetManager().FetchBlob(filename);
-const textureOpts={mipMap:true,mipMapQuality:"high",anisotropy:this._runtime.GetCanvasManager().GetTextureAnisotropy()};let imageBitmapOpts=null;if(C3.Supports.ImageBitmapOptions){imageBitmapOpts={"premultiplyAlpha":"premultiply"};textureOpts.premultiplyAlpha=false}const drawable=await runtime.RasterSvgImage(blob,imageWidth,imageHeight,surfaceWidth,surfaceHeight,imageBitmapOpts);let texture=null;if(C3.Supports.ImageBitmapOptions)texture=renderer.CreateStaticTexture(drawable,textureOpts);else texture=
-await renderer.CreateStaticTextureAsync(drawable,textureOpts);return texture}_ReleaseRasterResult(texture){texture.GetRenderer().DeleteTexture(texture)}_Redraw(){this.GetRuntime().UpdateRender()}};
-
-}
-
-{
-'use strict';const C3=self.C3;
-C3.Plugins.SVGPicture.Type=class SVGPictureType extends C3.SDKTypeBase{constructor(objectClass){super(objectClass)}Release(){super.Release()}OnCreate(){}LoadTextures(renderer){}ReleaseTextures(){}PreloadTexturesWithInstances(renderer){const rasterImages=new Set;for(const inst of this.GetObjectClass().GetInstances()){const sdkInst=inst.GetSdkInstance();sdkInst._UpdateRasterImage();const rasterImage=sdkInst._GetRasterImage();if(rasterImage)rasterImages.add(rasterImage)}return Promise.all([...rasterImages].map(ri=>this._PreloadRasterImage(renderer,
-ri)))}async _PreloadRasterImage(renderer,rasterImage){await rasterImage.WhenBaseSizeReady();const baseWidth=rasterImage.GetBaseWidth();const baseHeight=rasterImage.GetBaseHeight();const preloadSize=256;const preloadAspectRatio=1;const svgAspectRatio=baseWidth/baseHeight;let rasterImageWidth=0;let rasterImageHeight=0;if(preloadAspectRatio>svgAspectRatio){rasterImageWidth=preloadSize*svgAspectRatio;rasterImageHeight=preloadSize}else{rasterImageWidth=preloadSize;rasterImageHeight=preloadSize/svgAspectRatio}await rasterImage.StartRasterForSize(renderer,
-rasterImageWidth,rasterImageHeight)}};
-
-}
-
-{
-'use strict';const C3=self.C3;const SVG_FILENAME=0;const INITIALLY_VISIBLE=1;const ORIGIN=2;const tempRect=C3.New(C3.Rect);const tempQuad=C3.New(C3.Quad);
-C3.Plugins.SVGPicture.Instance=class SVGPictureInstance extends C3.SDKWorldInstanceBase{constructor(inst,properties){super(inst);this._svgFilename="";this._rasterImage=null;this._collisionPoly=C3.New(C3.CollisionPoly);this.GetWorldInfo().SetSourceCollisionPoly(this._collisionPoly);if(properties){this._svgFilename=properties[SVG_FILENAME];this.GetWorldInfo().SetVisible(!!properties[INITIALLY_VISIBLE])}this._UpdateRasterImage();this.HandleWebGLContextLoss()}Release(){this._ReleaseRasterImage();super.Release()}_GetRasterManager(){return this.GetPlugin()._GetRasterManager()}_ReleaseRasterImage(){if(this._rasterImage){this._rasterImage.Release();
-this._rasterImage=null}}_UpdateRasterImage(){if(!this._svgFilename){this._ReleaseRasterImage();this._UpdateCollisionPolygon();return}if(this._rasterImage&&this._rasterImage.GetDataSource()===this._svgFilename)return;this._ReleaseRasterImage();this._rasterImage=this._GetRasterManager().AddImage(this._svgFilename);this._rasterImage.WhenBaseSizeReady().then(()=>this._UpdateCollisionPolygon())}_UpdateCollisionPolygon(){const wi=this.GetWorldInfo();const objectWidth=Math.abs(wi.GetWidth());const objectHeight=
-Math.abs(wi.GetHeight());let objectContentWidth=objectWidth;let objectContentHeight=objectHeight;if(this._rasterImage){const baseWidth=this._rasterImage.GetBaseWidth();const baseHeight=this._rasterImage.GetBaseHeight();if(baseWidth!==0&&baseHeight!==0){const svgAspectRatio=baseWidth/baseHeight;const objectAspectRatio=objectWidth/objectHeight;if(objectAspectRatio>svgAspectRatio){objectContentWidth=objectHeight*svgAspectRatio;objectContentHeight=objectHeight}else{objectContentWidth=objectWidth;objectContentHeight=
-objectWidth/svgAspectRatio}}}const w=objectContentWidth/objectWidth;const h=objectContentHeight/objectHeight;const ox=wi.GetOriginX();const oy=wi.GetOriginY();tempRect.setWH(ox-ox*w,oy-oy*h,w,h);this._collisionPoly.setFromRect(tempRect,ox,oy);wi.SetSourceCollisionPoly(this._collisionPoly)}_GetRasterImage(){return this._rasterImage}OnWebGLContextLost(){this._ReleaseRasterImage()}OnWebGLContextRestored(){this._UpdateRasterImage()}Draw(renderer){const wi=this.GetWorldInfo();const layer=wi.GetLayer();
-if(!this._rasterImage)return;const baseWidth=this._rasterImage.GetBaseWidth();const baseHeight=this._rasterImage.GetBaseHeight();if(baseWidth===0||baseHeight===0)return;const objectWidth=Math.abs(wi.GetWidth());const objectHeight=Math.abs(wi.GetHeight());const z=wi.GetZElevation();const deviceWidth=layer._GetLayerToDrawSurfaceScale(objectWidth,z);const deviceHeight=layer._GetLayerToDrawSurfaceScale(objectHeight,z);const svgAspectRatio=baseWidth/baseHeight;const objectAspectRatio=objectWidth/objectHeight;
-let objectContentWidth=0;let objectContentHeight=0;let rasterImageWidth=0;let rasterImageHeight=0;if(objectAspectRatio>svgAspectRatio){rasterImageWidth=deviceHeight*svgAspectRatio;rasterImageHeight=deviceHeight;objectContentWidth=objectHeight*svgAspectRatio;objectContentHeight=objectHeight}else{rasterImageWidth=deviceWidth;rasterImageHeight=deviceWidth/svgAspectRatio;objectContentWidth=objectWidth;objectContentHeight=objectWidth/svgAspectRatio}this._rasterImage.StartRasterForSize(renderer,rasterImageWidth,
-rasterImageHeight);const texture=this._rasterImage.GetRasterizedResult();if(!texture)return;renderer.SetTexture(texture);const x=wi.GetX();const y=wi.GetY();const w=objectContentWidth*Math.sign(wi.GetWidth());const h=objectContentHeight*Math.sign(wi.GetHeight());tempRect.setWH(x-wi.GetOriginX()*w,y-wi.GetOriginY()*h,w,h);const a=wi.GetAngle();if(a===0)tempQuad.setFromRect(tempRect);else{tempRect.offset(-x,-y);tempQuad.setFromRotatedRectPrecalc(tempRect,wi.GetSinAngle(),wi.GetCosAngle());tempQuad.offset(x,
-y)}tempRect.set(0,0,this._rasterImage.GetRasterWidth()/texture.GetWidth(),this._rasterImage.GetRasterHeight()/texture.GetHeight());renderer.Quad3(tempQuad,tempRect)}GetPropertyValueByIndex(index){}SetPropertyValueByIndex(index,value){}_SetImage(url){this._svgFilename=url;this._UpdateRasterImage()}GetCurrentSurfaceSize(){if(this._rasterImage){const texture=this._rasterImage.GetRasterizedResult();if(texture)return[texture.GetWidth(),texture.GetHeight()]}return[100,100]}GetCurrentTexRect(){if(this._rasterImage){const texture=
-this._rasterImage.GetRasterizedResult();if(texture){tempRect.set(0,0,this._rasterImage.GetRasterWidth()/texture.GetWidth(),this._rasterImage.GetRasterHeight()/texture.GetHeight());return tempRect}}return null}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.SVGPicture.Cnds={};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.SVGPicture.Acts={SetImage(file){this._SetImage(file)},SetImageByName(file){this._SetImage(file)},SetEffect(effect){this.GetWorldInfo().SetBlendMode(effect);this._runtime.UpdateRender()}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.SVGPicture.Exps={};
-
-}
-
-{
 'use strict';const C3=self.C3;C3.Plugins.Text=class TextPlugin extends C3.SDKPluginBase{constructor(opts){super(opts)}Release(){super.Release()}};
 
 }
@@ -3495,84 +3392,6 @@ SetEffect(effect){this.GetWorldInfo().SetBlendMode(effect);this._runtime.UpdateR
 
 {
 'use strict';const C3=self.C3;C3.Plugins.Text.Exps={Text(){return this._text},PlainText(){if(this._enableBBcode)return C3.BBString.StripAnyTags(this._text);else return this._text},FaceName(){return this._faceName},FaceSize(){return this._ptSize},TextWidth(){return this._GetTextWidth()},TextHeight(){return this._GetTextHeight()},LineHeight(){return this._lineHeightOffset}};
-
-}
-
-{
-'use strict';const C3=self.C3;const DOM_COMPONENT_ID="text-input";C3.Plugins.TextBox=class TextInputPlugin extends C3.SDKDOMPluginBase{constructor(opts){super(opts,DOM_COMPONENT_ID);this.AddElementMessageHandler("click",(sdkInst,e)=>sdkInst._OnClick(e));this.AddElementMessageHandler("dblclick",(sdkInst,e)=>sdkInst._OnDoubleClick(e));this.AddElementMessageHandler("change",(sdkInst,e)=>sdkInst._OnChange(e))}Release(){super.Release()}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.TextBox.Type=class TextInputType extends C3.SDKTypeBase{constructor(objectClass){super(objectClass)}Release(){super.Release()}OnCreate(){}};
-
-}
-
-{
-'use strict';const C3=self.C3;const C3X=self.C3X;const TEXT=0;const PLACEHOLDER=1;const TOOLTIP=2;const INITIALLY_VISIBLE=3;const ENABLE=4;const READ_ONLY=5;const SPELL_CHECK=6;const TYPE=7;const AUTO_FONT_SIZE=8;const ID=9;const DOM_COMPONENT_ID="text-input";const elemTypes=["text","password","email","number","tel","url","textarea","search"];
-C3.Plugins.TextBox.Instance=class TextInputInstance extends C3.SDKDOMInstanceBase{constructor(inst,properties){super(inst,DOM_COMPONENT_ID);this._text="";this._placeholder="";this._title="";this._isEnabled=true;this._isReadOnly=false;this._spellCheck=false;this._type="text";this._autoFontSize=true;this._maxLength=-1;this._id="";if(properties){this._text=properties[TEXT];this._placeholder=properties[PLACEHOLDER];this._title=properties[TOOLTIP];this.GetWorldInfo().SetVisible(properties[INITIALLY_VISIBLE]);
-this._isEnabled=properties[ENABLE];this._isReadOnly=properties[READ_ONLY];this._spellCheck=properties[SPELL_CHECK];this._type=elemTypes[properties[TYPE]];this._autoFontSize=properties[AUTO_FONT_SIZE];this._id=properties[ID]}this.CreateElement({"type":this._type,"id":this._id})}Release(){super.Release()}GetElementState(){return{"text":this._text,"placeholder":this._placeholder,"title":this._title,"isEnabled":this._isEnabled,"isReadOnly":this._isReadOnly,"spellCheck":this._spellCheck,"maxLength":this._maxLength}}async _OnClick(e){this.GetScriptInterface().dispatchEvent(C3.New(C3.Event,
-"click",true));await this.TriggerAsync(C3.Plugins.TextBox.Cnds.OnClicked)}async _OnDoubleClick(e){this.GetScriptInterface().dispatchEvent(C3.New(C3.Event,"dblclick",true));await this.TriggerAsync(C3.Plugins.TextBox.Cnds.OnDoubleClicked)}async _OnChange(e){this._text=e["text"];this.GetScriptInterface().dispatchEvent(C3.New(C3.Event,"change",true));await this.TriggerAsync(C3.Plugins.TextBox.Cnds.OnTextChanged)}_SetText(text){if(this._text===text)return;this._text=text;this.UpdateElementState()}_GetText(){return this._text}_SetPlaceholder(placeholder){if(this._placeholder===
-placeholder)return;this._placeholder=placeholder;this.UpdateElementState()}_GetPlaceholder(){return this._placeholder}_SetTooltip(title){if(this._title===title)return;this._title=title;this.UpdateElementState()}_GetTooltip(){return this._title}_SetEnabled(e){e=!!e;if(this._isEnabled===e)return;this._isEnabled=e;this.UpdateElementState()}_IsEnabled(){return this._isEnabled}_SetReadOnly(r){r=!!r;if(this._isReadOnly===r)return;this._isReadOnly=r;this.UpdateElementState()}_IsReadOnly(){return this._isReadOnly}_SetMaxLength(l){l=
-Math.max(+l,-1);if(this._maxLength===l)return;this._maxLength=l;this.UpdateElementState()}_GetMaxLength(){return this._maxLength}_ScrollToBottom(){Promise.resolve().then(()=>this.PostToDOMElement("scroll-to-bottom"))}Draw(renderer){}SaveToJson(){return{"t":this._text,"p":this._placeholder,"ti":this._title,"e":this._isEnabled,"r":this._isReadOnly,"sp":this._spellCheck,"ml":this._maxLength,"type":this._type,"id":this._id}}LoadFromJson(o){this._text=o["t"];this._placeholder=o["p"];this._title=o["ti"];
-this._isEnabled=o["e"];this._isReadOnly=o["r"];this._spellCheck=o["sp"];this._maxLength=o.hasOwnProperty("ml")?o["ml"]:-1;this._type=o["type"];this._id=o["id"];this.UpdateElementState()}GetPropertyValueByIndex(index){switch(index){case TEXT:return this._text;case PLACEHOLDER:return this._placeholder;case TOOLTIP:return this._title;case ENABLE:return this._isEnabled;case READ_ONLY:return this._isReadOnly;case SPELL_CHECK:return this._spellCheck;case AUTO_FONT_SIZE:return this._autoFontSize;case ID:return this._id}}SetPropertyValueByIndex(index,
-value){switch(index){case TEXT:if(this._text===value)return;this._text=value;this.UpdateElementState();break;case PLACEHOLDER:if(this._placeholder===value)return;this._placeholder=value;this.UpdateElementState();break;case TOOLTIP:if(this._title===value)return;this._title=value;this.UpdateElementState();break;case ENABLE:if(this._isEnabled===!!value)return;this._isEnabled=!!value;this.UpdateElementState();break;case READ_ONLY:if(this._isReadOnly===!!value)return;this._isReadOnly=!!value;this.UpdateElementState();
-break;case SPELL_CHECK:if(this._spellCheck===!!value)return;this._spellCheck=!!value;this.UpdateElementState();break;case AUTO_FONT_SIZE:this._autoFontSize=!!value;break;case ID:if(this._id===value)return;this._id=value;this.UpdateElementState();break}}GetDebuggerProperties(){const Acts=C3.Plugins.TextBox.Acts;const prefix="plugins.textbox";return[{title:prefix+".name",properties:[{name:prefix+".properties.text.name",value:this._text,onedit:v=>this.CallAction(Acts.SetText,v)},{name:prefix+".properties.enabled.name",
-value:this._isEnabled,onedit:v=>this.CallAction(Acts.SetEnabled,v)},{name:prefix+".properties.read-only.name",value:this._isReadOnly,onedit:v=>this.CallAction(Acts.SetReadOnly,v)}]}]}GetScriptInterfaceClass(){return self.ITextInputInstance}};const map=new WeakMap;
-self.ITextInputInstance=class ITextInputInstance extends self.IDOMInstance{constructor(){super();map.set(this,self.IInstance._GetInitInst().GetSdkInstance())}set text(str){C3X.RequireString(str);map.get(this)._SetText(str)}get text(){return map.get(this)._GetText()}set placeholder(str){C3X.RequireString(str);map.get(this)._SetPlaceholder(str)}get placeholder(){return map.get(this)._GetPlaceholder()}set tooltip(str){C3X.RequireString(str);map.get(this)._SetTooltip(str)}get tooltip(){return map.get(this)._GetTooltip()}set isEnabled(e){map.get(this)._SetEnabled(e)}get isEnabled(){return map.get(this)._IsEnabled()}set isReadOnly(r){map.get(this)._SetReadOnly(r)}get isReadOnly(){return map.get(this)._IsReadOnly()}set maxLength(l){C3X.RequireFiniteNumber(l);
-map.get(this)._SetMaxLength(l)}get maxLength(){return map.get(this)._GetMaxLength()}scrollToBottom(){map.get(this)._ScrollToBottom()}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.TextBox.Cnds={CompareText(text,case_){if(case_===0)return C3.equalsNoCase(this._text,text);else return this._text===text},OnTextChanged(){return true},OnClicked(){return true},OnDoubleClicked(){return true}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.TextBox.Acts={SetText(param){this._SetText(param.toString())},AppendText(param){if(param==="")return;this._SetText(this._GetText()+param)},SetPlaceholder(placeholder){this._SetPlaceholder(placeholder)},SetTooltip(title){this._SetTooltip(title)},SetReadOnly(r){this._SetReadOnly(r===0)},ScrollToBottom(){this._ScrollToBottom()},SetMaxLength(l){this._SetMaxLength(l)}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.TextBox.Exps={Text(){return this._GetText()},MaxLength(){return this._GetMaxLength()}};
-
-}
-
-{
-'use strict';const C3=self.C3;const DOM_COMPONENT_ID="button";C3.Plugins.Button=class ButtonPlugin extends C3.SDKDOMPluginBase{constructor(opts){super(opts,DOM_COMPONENT_ID);this.AddElementMessageHandler("click",(sdkInst,e)=>sdkInst._OnClick(e))}Release(){super.Release()}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.Button.Type=class ButtonType extends C3.SDKTypeBase{constructor(objectClass){super(objectClass)}Release(){super.Release()}OnCreate(){}};
-
-}
-
-{
-'use strict';const C3=self.C3;const C3X=self.C3X;const TYPE=0;const TEXT=1;const TOOLTIP=2;const INITIALLY_VISIBLE=3;const ENABLE=4;const AUTO_FONT_SIZE=5;const CHECKED=6;const ID=7;const DOM_COMPONENT_ID="button";
-C3.Plugins.Button.Instance=class ButtonInstance extends C3.SDKDOMInstanceBase{constructor(inst,properties){super(inst,DOM_COMPONENT_ID);this._text="OK";this._isCheckbox=false;this._isChecked=false;this._title="";this._id="";this._isEnabled=true;this._autoFontSize=true;if(properties){this._isCheckbox=properties[TYPE]===1;this._text=properties[TEXT];this._title=properties[TOOLTIP];this.GetWorldInfo().SetVisible(properties[INITIALLY_VISIBLE]);this._isEnabled=properties[ENABLE];this._autoFontSize=properties[AUTO_FONT_SIZE];
-this._isChecked=properties[CHECKED];this._id=properties[ID]}this.CreateElement({"id":this._id})}Release(){super.Release()}GetElementState(){return{"text":this._text,"isCheckbox":this._isCheckbox,"isChecked":this._isChecked,"title":this._title,"isVisible":this.GetWorldInfo().IsVisible(),"isEnabled":this._isEnabled}}async _OnClick(e){this._isChecked=e["isChecked"];this.GetScriptInterface().dispatchEvent(C3.New(C3.Event,"click",true));await this.TriggerAsync(C3.Plugins.Button.Cnds.OnClicked)}_SetText(text){if(this._text===
-text)return;this._text=text;this.UpdateElementState()}_GetText(){return this._text}_SetTooltip(title){if(this._title===title)return;this._title=title;this.UpdateElementState()}_GetTooltip(){return this._title}_SetEnabled(e){e=!!e;if(this._isEnabled===e)return;this._isEnabled=e;this.UpdateElementState()}_IsEnabled(){return this._isEnabled}_SetChecked(c){if(!this._isCheckbox)return;c=!!c;if(this._isChecked===c)return;this._isChecked=c;this.UpdateElementState()}_IsChecked(){return this._isChecked}Draw(renderer){}SaveToJson(){return{"text":this._text,
-"checked":this._isChecked,"title":this._title,"enabled":this._isEnabled}}LoadFromJson(o){this._text=o["text"];this._isChecked=o["checked"];this._title=o["title"];this._isEnabled=o["enabled"];this.UpdateElementState()}GetPropertyValueByIndex(index){switch(index){case TEXT:return this._text;case TOOLTIP:return this._title;case ENABLE:return this._isEnabled;case AUTO_FONT_SIZE:return this._autoFontSize;case CHECKED:return this._isChecked;case ID:return this._id}}SetPropertyValueByIndex(index,value){switch(index){case TEXT:if(this._text===
-value)return;this._text=value;this.UpdateElementState();break;case TOOLTIP:if(this._title===value)return;this._title=value;this.UpdateElementState();break;case ENABLE:if(this._isEnabled===!!value)return;this._isEnabled=!!value;this.UpdateElementState();break;case AUTO_FONT_SIZE:this._autoFontSize=!!value;break;case CHECKED:if(this._isChecked===!!value)return;this._isChecked=!!value;this.UpdateElementState();break;case ID:if(this._id===!!value)return;this._id=value;this.UpdateElementState();break}}GetDebuggerProperties(){const Acts=
-C3.Plugins.Button.Acts;const prefix="plugins.button";return[{title:prefix+".name",properties:[{name:prefix+".properties.text.name",value:this._text,onedit:v=>this.CallAction(Acts.SetText,v)},{name:prefix+".properties.enabled.name",value:this._isEnabled,onedit:v=>this.CallAction(Acts.SetEnabled,v)},{name:prefix+".properties.checked.name",value:this._isChecked,onedit:v=>this.CallAction(Acts.SetChecked,v)}]}]}GetScriptInterfaceClass(){return self.IButtonInstance}};const map=new WeakMap;
-self.IButtonInstance=class IButtonInstance extends self.IDOMInstance{constructor(){super();map.set(this,self.IInstance._GetInitInst().GetSdkInstance())}set text(str){C3X.RequireString(str);map.get(this)._SetText(str)}get text(){return map.get(this)._GetText()}set tooltip(str){C3X.RequireString(str);map.get(this)._SetTooltip(str)}get tooltip(){return map.get(this)._GetTooltip()}set isEnabled(e){map.get(this)._SetEnabled(e)}get isEnabled(){return map.get(this)._IsEnabled()}set isChecked(c){map.get(this)._SetChecked(c)}get isChecked(){return map.get(this)._IsChecked()}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.Button.Cnds={OnClicked(){return true},IsChecked(){return this._isChecked},CompareText(str,caseSensitive){if(caseSensitive)return this._text===str;else return C3.equalsNoCase(this._text,str)}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.Button.Acts={SetText(text){this._SetText(text)},SetTooltip(title){this._SetTooltip(title)},SetChecked(c){this._SetChecked(c!==0)},ToggleChecked(){if(!this._isCheckbox)return;this._isChecked=!this._isChecked;this.UpdateElementState()}};
-
-}
-
-{
-'use strict';const C3=self.C3;C3.Plugins.Button.Exps={Text(){return this._text}};
 
 }
 
@@ -3875,6 +3694,192 @@ this._dx/s,this._dy/s,Math.max(s*2.5*dt,30),otherInst)},SetBounceOffSolids(b){th
 }
 
 {
+'use strict';const C3=self.C3;C3.Behaviors.Platform=class PlatformBehavior extends C3.SDKBehaviorBase{constructor(opts){super(opts)}Release(){super.Release()}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.Platform.Type=class PlatformType extends C3.SDKBehaviorTypeBase{constructor(behaviorType){super(behaviorType)}Release(){super.Release()}OnCreate(){}};
+
+}
+
+{
+'use strict';const C3=self.C3;const C3X=self.C3X;const IBehaviorInstance=self.IBehaviorInstance;const MAX_SPEED=0;const ACCELERATION=1;const DECELERATION=2;const JUMP_STRENGTH=3;const GRAVITY=4;const MAX_FALL_SPEED=5;const DOUBLE_JUMP=6;const JUMP_SUSTAIN=7;const DEFAULT_CONTROLS=8;const ENABLE=9;function accelerate(velocity,min_speed,max_speed,acceleration,dt){const min=min_speed*dt;const max=max_speed*dt;return C3.clamp(velocity*dt+.5*acceleration*dt*dt,min,max)}
+C3.Behaviors.Platform.Instance=class PlatformInstance extends C3.SDKBehaviorInstanceBase{constructor(behInst,properties){super(behInst);this._keyboardDisposables=null;this._leftKey=false;this._rightKey=false;this._jumpKey=false;this._jumped=false;this._doubleJumped=false;this._canDoubleJump=false;this._ignoreInput=false;this._simLeft=false;this._simRight=false;this._simJump=false;this._lastFloorObject=null;this._loadFloorUid=-1;this._lastFloorX=0;this._lastFloorY=0;this._floorIsJumpthru=false;this._wasOnFloor=
+false;this._wasOverJumpthru=!!this._runtime.GetCollisionEngine().TestOverlapJumpthru(this._inst);this._loadJumpthruUid=-1;this._animMode="stopped";this._fallThrough=0;this._isFirstTick=true;this._dx=0;this._dy=0;this._downX=0;this._downY=0;this._rightX=0;this._rightY=0;this._g=1500;this._g1=1500;this._ga=C3.toRadians(90);this._maxSpeed=330;this._acc=1500;this._dec=1500;this._jumpStrength=650;this._maxFall=1E3;this._enableDoubleJump=false;this._jumpSustain=0;this._sustainTime=0;this._defaultControls=
+true;this._ceilingCollisionMode=0;this._isEnabled=true;if(properties){this._maxSpeed=properties[MAX_SPEED];this._acc=properties[ACCELERATION];this._dec=properties[DECELERATION];this._jumpStrength=properties[JUMP_STRENGTH];this._g=properties[GRAVITY];this._maxFall=properties[MAX_FALL_SPEED];this._enableDoubleJump=!!properties[DOUBLE_JUMP];this._jumpSustain=properties[JUMP_SUSTAIN]/1E3;this._defaultControls=!!properties[DEFAULT_CONTROLS];this._isEnabled=!!properties[ENABLE]}const rt=this._runtime.Dispatcher();
+this._disposables=new C3.CompositeDisposable(C3.Disposable.From(rt,"instancedestroy",e=>this._OnInstanceDestroyed(e.instance)),C3.Disposable.From(rt,"afterload",e=>this._OnAfterLoad()));if(this._defaultControls)this._BindEvents();if(this._isEnabled)this._StartPostTicking();this._UpdateGravity();this._inst.GetUnsavedDataMap().set("isPlatformBehavior",true)}Release(){if(this._keyboardDisposables){this._keyboardDisposables.Release();this._keyboardDisposables=null}this._lastFloorObject=null;this._wasOverJumpthru=
+null;super.Release()}_BindEvents(){if(this._keyboardDisposables)return;const rt=this._runtime.Dispatcher();this._keyboardDisposables=new C3.CompositeDisposable(C3.Disposable.From(rt,"keydown",e=>this._OnKeyDown(e.data)),C3.Disposable.From(rt,"keyup",e=>this._OnKeyUp(e.data)),C3.Disposable.From(rt,"window-blur",()=>this._OnWindowOrKeyboardBlur()),C3.Disposable.From(rt,"keyboard-blur",()=>this._OnWindowOrKeyboardBlur()))}_UnBindEvents(){if(!this._keyboardDisposables)return;this._keyboardDisposables.Release();
+this._keyboardDisposables=null}_OnInstanceDestroyed(inst){if(this._lastFloorObject===inst)this._lastFloorObject=null;if(this._wasOverJumpthru===inst)this._wasOverJumpthru=null}_OnKeyDown(data){switch(data["key"]){case "ArrowLeft":this._leftKey=true;break;case "ArrowRight":this._rightKey=true;break;case "ArrowUp":this._jumpKey=true;break}}_OnKeyUp(data){switch(data["key"]){case "ArrowLeft":this._leftKey=false;break;case "ArrowRight":this._rightKey=false;break;case "ArrowUp":this._jumpKey=false;this._jumped=
+false;break}}_OnWindowOrKeyboardBlur(){this._leftKey=false;this._rightKey=false;this._jumpKey=false;this._jumped=false}SaveToJson(){return{"ii":this._ignoreInput,"lfx":this._lastFloorX,"lfy":this._lastFloorY,"lfo":this._lastFloorObject?this._lastFloorObject.GetUID():-1,"am":this._animMode,"en":this._isEnabled,"fall":this._fallThrough,"ft":this._isFirstTick,"dx":this._dx,"dy":this._dy,"ms":this._maxSpeed,"acc":this._acc,"dec":this._dec,"js":this._jumpStrength,"g":this._g,"g1":this._g1,"mf":this._maxFall,
+"wof":this._wasOnFloor,"woj":this._wasOverJumpthru?this._wasOverJumpthru.GetUID():-1,"ga":this._ga,"edj":this._enableDoubleJump,"cdj":this._canDoubleJump,"dj":this._doubleJumped,"sus":this._jumpSustain,"dc":this._defaultControls,"cc":this._ceilingCollisionMode}}LoadFromJson(o){this._ignoreInput=o["ii"];this._lastFloorX=o["lfx"];this._lastFloorY=o["lfy"];this._loadFloorUid=o["lfo"];this._animMode=o["am"];const isEnabled=o["en"];this._fallThrough=o["fall"];this._isFirstTick=o["ft"];this._dx=o["dx"];
+this._dy=o["dy"];this._maxSpeed=o["ms"];this._acc=o["acc"];this._dec=o["dec"];this._jumpStrength=o["js"];this._g=o["g"];this._g1=o["g1"];this._maxFall=o["mf"];this._wasOnFloor=o["wof"];this._loadJumpthruUid=o["woj"];this._ga=o["ga"];this._enableDoubleJump=o["edj"];this._canDoubleJump=o["cdj"];this._doubleJumped=o["dj"];this._jumpSustain=o["sus"];this._defaultControls=o["dc"];this._ceilingCollisionMode=o["cc"]||0;this._leftKey=false;this._rightKey=false;this._jumpKey=false;this._jumped=false;this._simLeft=
+false;this._simRight=false;this._simJump=false;this._sustainTime=0;if(this._defaultControls)this._BindEvents();else this._UnBindEvents();this._SetEnabled(isEnabled);this._UpdateGravity()}_OnAfterLoad(){if(this._loadFloorUid===-1)this._lastFloorObject=null;else this._lastFloorObject=this._runtime.GetInstanceByUID(this._loadFloorUid);if(this._loadJumpthruUid===-1)this._wasOverJumpthru=null;else this._wasOverJumpthru=this._runtime.GetInstanceByUID(this._loadJumpthruUid)}_UpdateGravity(){this._downX=
+Math.cos(this._ga);this._downY=Math.sin(this._ga);this._rightX=Math.cos(this._ga-Math.PI/2);this._rightY=Math.sin(this._ga-Math.PI/2);this._downX=C3.round6dp(this._downX);this._downY=C3.round6dp(this._downY);this._rightX=C3.round6dp(this._rightX);this._rightY=C3.round6dp(this._rightY);this._g1=this._g;if(this._g<0){this._downX*=-1;this._downY*=-1;this._g=Math.abs(this._g)}}_GetGDir(){if(this._g<0)return-1;else return 1}_IsOnFloor(){const wi=this._inst.GetWorldInfo();const collisionEngine=this._runtime.GetCollisionEngine();
+const inst=this._inst;const lfo=this._lastFloorObject;const oldX=wi.GetX();const oldY=wi.GetY();wi.OffsetXY(this._downX,this._downY);wi.SetBboxChanged();if(lfo&&collisionEngine.TestOverlap(inst,lfo)&&(!lfo.GetObjectClass().HasSolidBehavior()||collisionEngine.IsSolidCollisionAllowed(lfo,inst))){wi.SetXY(oldX,oldY);wi.SetBboxChanged();return lfo}else{let ret=collisionEngine.TestOverlapSolid(inst);let ret2=null;if(!ret&&this._fallThrough===0)ret2=collisionEngine.TestOverlapJumpthru(inst,true);wi.SetXY(oldX,
+oldY);wi.SetBboxChanged();if(ret)if(collisionEngine.TestOverlap(inst,ret))return null;else{this._floorIsJumpthru=false;return ret}if(ret2&&ret2.length){let j=0;for(let i=0,len=ret2.length;i<len;++i){ret2[j]=ret2[i];if(!collisionEngine.TestOverlap(inst,ret2[i]))++j}if(j>=1){this._floorIsJumpthru=true;return ret2[0]}}return null}}PostTick(){if(!this._isEnabled)return;const dt=this._runtime.GetDt(this._inst);if(!this._jumpKey&&!this._simJump)this._jumped=false;let left=this._leftKey||this._simLeft;let right=
+this._rightKey||this._simRight;let jumpkey=this._jumpKey||this._simJump;let jump=jumpkey&&!this._jumped;this._simLeft=false;this._simRight=false;this._simJump=false;if(this._ignoreInput){left=false;right=false;jumpkey=false;jump=false}if(!jumpkey)this._sustainTime=0;this._HandleFirstTick();const [mx,my,floorMoved]=this._TrackMovingPlatform();let floor=this._IsOnFloor();const didJustLandOnFloor=floor&&!this._wasOnFloor;let isStuck=false;[isStuck,floor]=this._MaybePushOutSolid(floor);if(isStuck)return;
+this._TrackFloor(floor,floorMoved,mx,jumpkey);jump=this._HandleJump(floor,jump,jumpkey);if(!floor)this._ApplyJumpGravity(jump,jumpkey,dt);this._wasOnFloor=!!floor;const hacc=this._ApplyHorizontalAcceleration(left,right,dt);let landed=false;let downMagnitude=0;if(this._dx!==0)landed=this._HandleHorizontalMovement(dt,hacc,floor,jump);if(this._dy!==0){const [l,dm]=this._HandleVerticalMovement(dt,floor);landed=landed||l;downMagnitude=dm}if(!landed&&didJustLandOnFloor&&this._dy<0&&downMagnitude>0){this._dy=
+0;landed=true}this._HandleAnimationTriggers(floor,landed,jump);if(this._fallThrough>0)this._fallThrough--;this._wasOverJumpthru=this._runtime.GetCollisionEngine().TestOverlapJumpthru(this._inst)}_HandleFirstTick(){if(!this._isFirstTick)return;const inst=this._inst;const collisionEngine=this._runtime.GetCollisionEngine();if(collisionEngine.TestOverlapSolid(inst)||collisionEngine.TestOverlapJumpthru(inst))collisionEngine.PushOutSolid(inst,-this._downX,-this._downY,4,true);this._isFirstTick=false}_TrackMovingPlatform(){const lastFloor=
+this._lastFloorObject;const lastFloorWi=lastFloor?lastFloor.GetWorldInfo():null;let mx=0;let my=0;let floorMoved=false;if(lastFloor&&this._dy===0&&(lastFloorWi.GetY()!==this._lastFloorY||lastFloorWi.GetX()!==this._lastFloorX)){const inst=this._inst;const wi=inst.GetWorldInfo();const collisionEngine=this._runtime.GetCollisionEngine();const lfx=lastFloorWi.GetX();const lfy=lastFloorWi.GetY();mx=lfx-this._lastFloorX;my=lfy-this._lastFloorY;wi.OffsetXY(mx,my);wi.SetBboxChanged();this._lastFloorX=lfx;
+this._lastFloorY=lfy;floorMoved=true;if(collisionEngine.TestOverlapSolid(inst))collisionEngine.PushOutSolid(inst,-mx,-my,Math.hypot(mx,my)*2.5)}return[mx,my,floorMoved]}_MaybePushOutSolid(floor){let isStuck=false;const inst=this._inst;const wi=inst.GetWorldInfo();const collisionEngine=this._runtime.GetCollisionEngine();const collInst=collisionEngine.TestOverlapSolid(inst);if(!collInst)return[false,floor];const instWidth=Math.abs(wi.GetWidth());const instHeight=Math.abs(wi.GetHeight());if(inst.GetSavedDataMap().get("inputPredicted"))collisionEngine.PushOutSolid(inst,
+-this._downX,-this._downY,10,false);else if(collisionEngine.PushOutSolidAxis(inst,-this._downX,-this._downY,instHeight/8)){collisionEngine.RegisterCollision(inst,collInst);floor=collInst;this._lastFloorObject=collInst;const collWi=collInst.GetWorldInfo();this._lastFloorX=collWi.GetX();this._lastFloorY=collWi.GetY();this._floorIsJumpthru=false}else if(collisionEngine.PushOutSolidAxis(inst,this._rightX,this._rightY,instWidth/2)||collisionEngine.PushOutSolidAxis(inst,this._downX,this._downY,instHeight/
+2)||collisionEngine.PushOutSolidNearest(inst,Math.max(instWidth,instHeight)/2))collisionEngine.RegisterCollision(inst,collInst);else isStuck=true;return[isStuck,floor]}_TrackFloor(floor,floorMoved,mx,jumpkey){const inst=this._inst;const collisionEngine=this._runtime.GetCollisionEngine();if(floor){const downX=this._downX;const downY=this._downY;const rightX=this._rightX;const rightY=this._rightY;this._doubleJumped=false;this._canDoubleJump=false;if(this._dy>0){if(!this._wasOnFloor){collisionEngine.PushInFractional(inst,
+-downX,-downY,floor,16);this._wasOnFloor=true}this._dy=0}if(this._lastFloorObject!==floor){this._lastFloorObject=floor;const floorWi=floor.GetWorldInfo();this._lastFloorX=floorWi.GetX();this._lastFloorY=floorWi.GetY();collisionEngine.RegisterCollision(inst,floor)}else if(floorMoved){const collInst=collisionEngine.TestOverlapSolid(inst);if(collInst){collisionEngine.RegisterCollision(inst,collInst);if(mx!==0)if(mx>0)collisionEngine.PushOutSolid(inst,-rightX,-rightY);else collisionEngine.PushOutSolid(inst,
+rightX,rightY);collisionEngine.PushOutSolid(inst,-downX,-downY)}}}else if(!jumpkey)this._canDoubleJump=true}_HandleJump(floor,jump,jumpkey){if(floor&&jump||!floor&&this._enableDoubleJump&&jumpkey&&this._canDoubleJump&&!this._doubleJumped){const inst=this._inst;const wi=inst.GetWorldInfo();const collisionEngine=this._runtime.GetCollisionEngine();const oldX=wi.GetX();const oldY=wi.GetY();wi.OffsetXY(-this._downX,-this._downY);wi.SetBboxChanged();if(!collisionEngine.TestOverlapSolid(inst)){this._sustainTime=
+this._jumpSustain;this.Trigger(C3.Behaviors.Platform.Cnds.OnJump);this._animMode="jumping";this._dy=-this._jumpStrength;jump=true;if(floor)this._jumped=true;else this._doubleJumped=true}else jump=false;wi.SetXY(oldX,oldY);wi.SetBboxChanged()}return jump}_ApplyJumpGravity(jump,jumpkey,dt){if(jumpkey&&this._sustainTime>0){this._dy=-this._jumpStrength;this._sustainTime-=dt}else{this._lastFloorObject=null;this._dy+=this._g*dt;if(this._dy>this._maxFall)this._dy=this._maxFall}if(jump)this._jumped=true}_ApplyHorizontalAcceleration(left,
+right,dt){const acc=this._acc;const dec=this._dec;if(left===right)if(this._dx<0){this._dx+=dec*dt;if(this._dx>0)this._dx=0}else if(this._dx>0){this._dx-=dec*dt;if(this._dx<0)this._dx=0}let hacc=0;if(left&&!right)if(this._dx>0)hacc=-(acc+dec);else hacc=-acc;if(right&&!left)if(this._dx<0)hacc=acc+dec;else hacc=acc;this._dx+=hacc*dt;this._dx=C3.clamp(this._dx,-this._maxSpeed,this._maxSpeed);return hacc}_HandleHorizontalMovement(dt,hacc,floor,jump){const inst=this._inst;const wi=inst.GetWorldInfo();const collisionEngine=
+this._runtime.GetCollisionEngine();const downX=this._downX;const downY=this._downY;const rightX=this._rightX;const rightY=this._rightY;const maxSpeed=this._maxSpeed;let landed=false;let oldX=wi.GetX();let oldY=wi.GetY();const mx=accelerate(this._dx,-maxSpeed,maxSpeed,hacc,dt)*rightX;const my=accelerate(this._dx,-maxSpeed,maxSpeed,hacc,dt)*rightY;wi.OffsetXY(rightX*(this._dx>1?1:-1)-downX,rightY*(this._dx>1?1:-1)-downY);wi.SetBboxChanged();let isJumpthru=false;const slopeTooSteep=collisionEngine.TestOverlapSolid(inst);
+wi.SetXY(oldX+mx,oldY+my);wi.SetBboxChanged();let obstacle=collisionEngine.TestOverlapSolid(inst);if(!obstacle&&floor){obstacle=collisionEngine.TestOverlapJumpthru(inst);if(obstacle){wi.SetXY(oldX,oldY);wi.SetBboxChanged();if(collisionEngine.TestOverlap(inst,obstacle)){obstacle=null;isJumpthru=false}else isJumpthru=true;wi.SetXY(oldX+mx,oldY+my);wi.SetBboxChanged()}}if(obstacle){let pushDist=Math.abs(this._dx*dt)+2;if(slopeTooSteep||!collisionEngine.PushOutSolid(inst,-downX,-downY,pushDist,isJumpthru,
+obstacle)){collisionEngine.RegisterCollision(inst,obstacle);pushDist=Math.max(Math.abs(this._dx*dt*2.5),30);if(!collisionEngine.PushOutSolid(inst,rightX*(this._dx<0?1:-1),rightY*(this._dx<0?1:-1),pushDist,false)){wi.SetXY(oldX,oldY);wi.SetBboxChanged()}else if(floor&&!isJumpthru&&!this._floorIsJumpthru){oldX=wi.GetX();oldY=wi.GetY();wi.OffsetXY(downX,downY);if(collisionEngine.TestOverlapSolid(inst)){if(!collisionEngine.PushOutSolid(inst,-downX,-downY,3,false)){wi.SetXY(oldX,oldY);wi.SetBboxChanged()}}else{wi.SetXY(oldX,
+oldY);wi.SetBboxChanged()}}if(!isJumpthru)this._dx=0}else if(!slopeTooSteep&&!jump&&Math.abs(this._dy)<Math.abs(this._jumpStrength/4)){this._dy=0;if(!floor)landed=true}}else{const newFloor=this._IsOnFloor();if(floor&&!newFloor){const mag=Math.ceil(Math.abs(this._dx*dt))+2;oldX=wi.GetX();oldY=wi.GetY();wi.OffsetXY(downX*mag,downY*mag);wi.SetBboxChanged();if(collisionEngine.TestOverlapSolid(inst)||collisionEngine.TestOverlapJumpthru(inst))collisionEngine.PushOutSolid(inst,-downX,-downY,mag+2,true);
+else{wi.SetXY(oldX,oldY);wi.SetBboxChanged()}}else if(newFloor){if(!floor&&this._floorIsJumpthru){this._lastFloorObject=newFloor;const floorWi=newFloor.GetWorldInfo();this._lastFloorX=floorWi.GetX();this._lastFloorY=floorWi.GetY();this._dy=0;landed=true}if(this._dy===0)collisionEngine.PushInFractional(inst,-downX,-downY,newFloor,16)}}return landed}_HandleVerticalMovement(dt,floor){const inst=this._inst;const wi=inst.GetWorldInfo();const collisionEngine=this._runtime.GetCollisionEngine();const downX=
+this._downX;const downY=this._downY;let landed=false;let oldX=wi.GetX();let oldY=wi.GetY();const downMagnitude=accelerate(this._dy,-Infinity,this._maxFall,this._g,dt);wi.OffsetXY(downMagnitude*downX,downMagnitude*downY);const newX=wi.GetX();const newY=wi.GetY();wi.SetBboxChanged();let collInst=collisionEngine.TestOverlapSolid(inst);let fellOnJumpthru=false;if(!collInst&&this._dy>0&&!floor){const allOver=this._fallThrough>0?null:collisionEngine.TestOverlapJumpthru(inst,true);if(allOver&&allOver.length){if(this._wasOverJumpthru){wi.SetXY(oldX,
+oldY);wi.SetBboxChanged();let j=0;for(let i=0,len=allOver.length;i<len;++i){allOver[j]=allOver[i];if(!collisionEngine.TestOverlap(inst,allOver[i]))++j}C3.truncateArray(allOver,j);wi.SetXY(newX,newY);wi.SetBboxChanged()}if(allOver.length>=1)collInst=allOver[0]}fellOnJumpthru=!!collInst}if(collInst){collisionEngine.RegisterCollision(inst,collInst);this._sustainTime=0;let multiplier=1.1;if(fellOnJumpthru&&!this._wasOverJumpthru)multiplier=2;const pushDist=Math.max(Math.abs(this._dy*dt*multiplier),2);
+if(!collisionEngine.PushOutSolid(inst,downX*(this._dy<0?1:-1),downY*(this._dy<0?1:-1),pushDist,fellOnJumpthru,collInst)){wi.SetXY(oldX,oldY);wi.SetBboxChanged();this._wasOnFloor=true;if(!fellOnJumpthru)this._dy=0}else{this._lastFloorObject=collInst;const collWi=collInst.GetWorldInfo();this._lastFloorX=collWi.GetX();this._lastFloorY=collWi.GetY();this._floorIsJumpthru=fellOnJumpthru;if(fellOnJumpthru)landed=true;if(this._dy>0||this._ceilingCollisionMode===0)this._dy=0;if(this._dy<0&&this._ceilingCollisionMode===
+1)collisionEngine.PushInFractional(inst,downX,downY,collInst,32)}}return[landed,downMagnitude]}_HandleAnimationTriggers(floor,landed,jump){if(this._animMode!=="falling"&&this._dy>0&&!floor){this.Trigger(C3.Behaviors.Platform.Cnds.OnFall);this._animMode="falling"}if((floor||landed)&&this._dy>=0)if(this._animMode==="falling"||landed||jump&&this._dy===0){this.Trigger(C3.Behaviors.Platform.Cnds.OnLand);if(this._dx===0&&this._dy===0)this._animMode="stopped";else this._animMode="moving"}else{if(this._animMode!==
+"stopped"&&this._dx===0&&this._dy===0){this.Trigger(C3.Behaviors.Platform.Cnds.OnStop);this._animMode="stopped"}if(this._animMode!=="moving"&&(this._dx!==0||this._dy!==0)&&!jump){this.Trigger(C3.Behaviors.Platform.Cnds.OnMove);this._animMode="moving"}}}_IsMoving(){return this._GetVectorX()!==0||this._GetVectorY()!==0}_CheckIfStandingOnFloor(){if(this._dy!==0)return false;const inst=this._inst;const wi=this.GetWorldInfo();const collisionEngine=this._runtime.GetCollisionEngine();const oldX=wi.GetX();
+const oldY=wi.GetY();wi.OffsetXY(this._downX,this._downY);wi.SetBboxChanged();const ret=collisionEngine.TestOverlapSolid(inst);let ret2=null;if(!ret&&this._fallThrough===0)ret2=collisionEngine.TestOverlapJumpthru(inst,true);wi.SetXY(oldX,oldY);wi.SetBboxChanged();if(ret)return!collisionEngine.TestOverlap(inst,ret);if(ret2&&ret2.length){let j=0;for(let i=0,len=ret2.length;i<len;++i){ret2[j]=ret2[i];if(!collisionEngine.TestOverlap(inst,ret2[i]))j++}if(j>=1)return true}return false}_IsByWall(side){const inst=
+this._inst;const wi=this.GetWorldInfo();const collisionEngine=this._runtime.GetCollisionEngine();const oldX=wi.GetX();const oldY=wi.GetY();if(side===0)wi.OffsetXY(-this._rightX*2,-this._rightY*2);else wi.OffsetXY(this._rightX*2,this._rightY*2);wi.SetBboxChanged();if(!collisionEngine.TestOverlapSolid(inst)){wi.SetXY(oldX,oldY);wi.SetBboxChanged();return false}wi.OffsetXY(-this._downX*3,-this._downY*3);wi.SetBboxChanged();const ret=!!collisionEngine.TestOverlapSolid(inst);wi.SetXY(oldX,oldY);wi.SetBboxChanged();
+return ret}_FallThroughJumpThru(){const wi=this.GetWorldInfo();const oldX=wi.GetX();const oldY=wi.GetY();wi.OffsetXY(this._downX,this._downY);wi.SetBboxChanged();const overlaps=this._runtime.GetCollisionEngine().TestOverlapJumpthru(this._inst,false);wi.SetXY(oldX,oldY);wi.SetBboxChanged();if(!overlaps)return;this._fallThrough=3;this._lastFloorObject=null}_ResetDoubleJump(d){this._doubleJumped=!d}_GetSpeed(){return Math.hypot(this._dx,this._dy)}_GetMovingAngle(){return Math.atan2(this._dy,this._dx)}_IsJumping(){return this._dy<
+0}_IsFalling(){return this._dy>0}_SetMaxSpeed(ms){this._maxSpeed=Math.max(ms,0)}_GetMaxSpeed(){return this._maxSpeed}_SetAcceleration(acc){this._acc=Math.max(acc,0)}_GetAcceleration(){return this._acc}_SetDeceleration(dec){this._dec=Math.max(dec,0)}_GetDeceleration(){return this._dec}_SetJumpStrength(js){this._jumpStrength=Math.max(js,0)}_GetJumpStrength(){return this._jumpStrength}_SetMaxFallSpeed(mfs){this._maxFall=Math.max(mfs,0)}_GetMaxFallSpeed(){return this._maxFall}_SetGravity(grav){if(this._g1===
+grav)return;this._g=grav;this._UpdateGravity();const collisionEngine=this._runtime.GetCollisionEngine();const wi=this.GetWorldInfo();if(collisionEngine.TestOverlapSolid(this._inst)){collisionEngine.PushOutSolid(this._inst,this._downX,this._downY,10);wi.OffsetXY(this._downX*2,this._downY*2);wi.SetBboxChanged()}this._lastFloorObject=null}_GetGravity(){return this._g}_SetGravityAngle(a){a=C3.clampAngle(a);if(this._ga===a)return;this._ga=a;this._UpdateGravity();this._lastFloorObject=null}_GetGravityAngle(){return this._ga}_SetDoubleJumpEnabled(e){this._enableDoubleJump=
+!!e}_IsDoubleJumpEnabled(){return this._enableDoubleJump}_SetJumpSustain(s){this._jumpSustain=s}_GetJumpSustain(){return this._jumpSustain}_SetCeilingCollisionMode(m){this._ceilingCollisionMode=m}_GetCeilingCollisionMode(){return this._ceilingCollisionMode}_SetVectorX(x){this._dx=x}_GetVectorX(){return this._dx}_SetVectorY(y){this._dy=y}_GetVectorY(){return this._dy}_SimulateControl(ctrl){if(!this._isEnabled)return;switch(ctrl){case 0:this._simLeft=true;break;case 1:this._simRight=true;break;case 2:this._simJump=
+true;break}}_SetDefaultControls(d){d=!!d;if(this._defaultControls===d)return;this._defaultControls=d;if(this._defaultControls)this._BindEvents();else{this._UnBindEvents();this._OnWindowOrKeyboardBlur()}}_IsDefaultControls(){return this._defaultControls}_SetIgnoreInput(i){this._ignoreInput=!!i}_IsIgnoreInput(){return this._ignoreInput}_SetEnabled(e){e=!!e;if(this._isEnabled===e)return;this._isEnabled=e;if(this._isEnabled)this._StartPostTicking();else{this._StopPostTicking();this._lastFloorObject=null;
+this._simLeft=false;this._simRight=false;this._simJump=false}}_IsEnabled(){return this._isEnabled}GetPropertyValueByIndex(index){switch(index){case MAX_SPEED:return this._GetMaxSpeed();case ACCELERATION:return this._GetAcceleration();case DECELERATION:return this._GetDeceleration();case JUMP_STRENGTH:return this._GetJumpStrength();case GRAVITY:return this._GetGravity();case MAX_FALL_SPEED:return this._GetMaxFallSpeed();case DOUBLE_JUMP:return this._IsDoubleJumpEnabled();case JUMP_SUSTAIN:return this._GetJumpSustain()*
+1E3;case DEFAULT_CONTROLS:return this._IsDefaultControls();case ENABLE:return this._IsEnabled()}}SetPropertyValueByIndex(index,value){switch(index){case MAX_SPEED:this._SetMaxSpeed(value);break;case ACCELERATION:this._SetAcceleration(value);break;case DECELERATION:this._SetDeceleration(value);break;case JUMP_STRENGTH:this._SetJumpStrength(value);break;case GRAVITY:this._SetGravity(value);break;case MAX_FALL_SPEED:this._SetMaxFallSpeed(value);break;case DOUBLE_JUMP:this._SetDoubleJumpEnabled(!!value);
+break;case JUMP_SUSTAIN:this._SetJumpSustain(value/1E3);break;case DEFAULT_CONTROLS:this._SetDefaultControls(!!value);break;case ENABLE:this._SetEnabled(!!value);break}}GetDebuggerProperties(){const prefix="behaviors.platform";return[{title:"$"+this.GetBehaviorType().GetName(),properties:[{name:prefix+".debugger.vector-x",value:this._GetVectorX(),onedit:v=>this._SetVectorX(v)},{name:prefix+".debugger.vector-y",value:this._GetVectorY(),onedit:v=>this._SetVectorY(v)},{name:prefix+".properties.max-speed.name",
+value:this._GetMaxSpeed(),onedit:v=>this._SetMaxSpeed(v)},{name:prefix+".properties.acceleration.name",value:this._GetAcceleration(),onedit:v=>this._SetAcceleration(v)},{name:prefix+".properties.deceleration.name",value:this._GetDeceleration(),onedit:v=>this._SetDeceleration(v)},{name:prefix+".properties.jump-strength.name",value:this._GetJumpStrength(),onedit:v=>this._SetJumpStrength(v)},{name:prefix+".properties.gravity.name",value:this._GetGravity(),onedit:v=>this._SetGravity(v)},{name:prefix+
+".debugger.gravity-angle",value:C3.toDegrees(this._GetGravityAngle()),onedit:v=>this._SetGravityAngle(C3.toRadians(v))},{name:prefix+".properties.max-fall-speed.name",value:this._GetMaxFallSpeed(),onedit:v=>this._SetMaxFallSpeed(v)},{name:prefix+".debugger.animation-mode",value:[prefix+".debugger.anim-"+this._animMode]},{name:prefix+".properties.enabled.name",value:this._IsEnabled(),onedit:v=>this._SetEnabled(v)}]}]}GetScriptInterfaceClass(){return self.IPlatformBehaviorInstance}};const map=new WeakMap;
+const SIMULATE_CONTROL_MAP=new Map([["left",0],["right",1],["jump",2]]);
+self.IPlatformBehaviorInstance=class IPlatformBehaviorInstance extends IBehaviorInstance{constructor(){super();map.set(this,IBehaviorInstance._GetInitInst().GetSdkInstance())}fallThrough(){map.get(this)._FallThroughJumpThru()}resetDoubleJump(d){map.get(this)._ResetDoubleJump(!!d)}simulateControl(ctrl){C3X.RequireString(ctrl);const index=SIMULATE_CONTROL_MAP.get(ctrl);if(typeof index!=="number")throw new Error("invalid control");map.get(this)._SimulateControl(index)}get speed(){return map.get(this)._GetSpeed()}get maxSpeed(){return map.get(this)._GetMaxSpeed()}set maxSpeed(s){C3X.RequireFiniteNumber(s);
+map.get(this)._SetMaxSpeed(s)}get acceleration(){return map.get(this)._GetAcceleration()}set acceleration(a){C3X.RequireFiniteNumber(a);map.get(this)._SetAcceleration(a)}get deceleration(){return map.get(this)._GetDeceleration()}set deceleration(d){C3X.RequireFiniteNumber(d);map.get(this)._SetDeceleration(d)}get jumpStrength(){return map.get(this)._GetJumpStrength()}set jumpStrength(js){C3X.RequireFiniteNumber(js);map.get(this)._SetJumpStrength(js)}get maxFallSpeed(){return map.get(this)._GetMaxFallSpeed()}set maxFallSpeed(mfs){C3X.RequireFiniteNumber(mfs);
+map.get(this)._SetMaxFallSpeed(mfs)}get gravity(){return map.get(this)._GetGravity()}set gravity(g){C3X.RequireFiniteNumber(g);map.get(this)._SetGravity(g)}get gravityAngle(){return map.get(this)._GetGravityAngle()}set gravityAngle(ga){C3X.RequireFiniteNumber(ga);map.get(this)._SetGravityAngle(ga)}get isDoubleJumpEnabled(){return map.get(this)._IsDoubleJumpEnabled()}set isDoubleJumpEnabled(e){map.get(this)._SetDoubleJumpEnabled(!!e)}get jumpSustain(){return map.get(this)._GetJumpSustain()}set jumpSustain(js){C3X.RequireFiniteNumber(js);
+map.get(this)._SetJumpSustain(js)}get ceilingCollisionMode(){const ccm=map.get(this)._GetCeilingCollisionMode();return ccm===0?"stop":"preserve-momentum"}set ceilingCollisionMode(ccm){C3X.RequireString(ccm);const bi=map.get(this);if(ccm==="stop")bi._SetCeilingCollisionMode(0);else if(ccm==="preserve-momentum")bi._SetCeilingCollisionMode(1);else throw new Error("invalid mode");}get isOnFloor(){return map.get(this)._CheckIfStandingOnFloor()}isByWall(side){C3X.RequireString(side);const bi=map.get(this);
+if(side==="left")return bi._IsByWall(0);else if(side==="right")return bi._IsByWall(1);else throw new Error("invalid side");}get isMoving(){return map.get(this)._IsMoving()}get isJumping(){return map.get(this)._IsJumping()}get isFalling(){return map.get(this)._IsFalling()}get vectorX(){return map.get(this)._GetVectorX()}set vectorX(x){C3X.RequireFiniteNumber(x);map.get(this)._SetVectorX(x)}get vectorY(){return map.get(this)._GetVectorY()}set vectorY(y){C3X.RequireFiniteNumber(y);map.get(this)._SetVectorY(y)}get isDefaultControls(){return map.get(this)._IsDefaultControls()}set isDefaultControls(d){map.get(this)._SetDefaultControls(!!d)}get isIgnoringInput(){return map.get(this)._IsIgnoreInput()}set isIgnoringInput(e){map.get(this)._SetIgnoreInput(!!e)}get isEnabled(){return map.get(this)._IsEnabled()}set isEnabled(e){map.get(this)._SetEnabled(!!e)}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.Platform.Cnds={IsMoving(){return this._IsMoving()},CompareSpeed(cmp,s){return C3.compare(this._GetSpeed(),cmp,s)},IsOnFloor(){return this._CheckIfStandingOnFloor()},IsByWall(side){return this._IsByWall(side)},IsJumping(){return this._IsJumping()},IsFalling(){return this._IsFalling()},IsDoubleJumpEnabled(){return this._IsDoubleJumpEnabled()},OnJump(){return true},OnFall(){return true},OnStop(){return true},OnMove(){return true},OnLand(){return true},IsEnabled(){return this._IsEnabled()}};
+
+}
+
+{
+'use strict';const C3=self.C3;
+C3.Behaviors.Platform.Acts={SetMaxSpeed(ms){this._SetMaxSpeed(ms)},SetAcceleration(acc){this._SetAcceleration(acc)},SetDeceleration(dec){this._SetDeceleration(dec)},SetJumpStrength(js){this._SetJumpStrength(js)},SetMaxFallSpeed(mfs){this._SetMaxFallSpeed(mfs)},SetGravity(grav){this._SetGravity(grav)},SimulateControl(ctrl){this._SimulateControl(ctrl)},SetIgnoreInput(i){this._SetIgnoreInput(!!i)},SetVectorX(x){this._SetVectorX(x)},SetVectorY(y){this._SetVectorY(y)},SetGravityAngle(a){this._SetGravityAngle(C3.toRadians(a))},SetEnabled(en){this._SetEnabled(en!==
+0)},FallThrough(){this._FallThroughJumpThru()},SetDoubleJumpEnabled(e){this._SetDoubleJumpEnabled(e!==0)},SetJumpSustain(s){this._SetJumpSustain(s/1E3)},SetCeilingCollision(m){this._SetCeilingCollisionMode(m)},SetDefaultControls(d){this._SetDefaultControls(d)},ResetDoubleJump(d){this._ResetDoubleJump(d)}};
+
+}
+
+{
+'use strict';const C3=self.C3;
+C3.Behaviors.Platform.Exps={Speed(){return this._GetSpeed()},MaxSpeed(){return this._GetMaxSpeed()},Acceleration(){return this._GetAcceleration()},Deceleration(){return this._GetDeceleration()},JumpStrength(){return this._GetJumpStrength()},Gravity(){return this._GetGravity()},GravityAngle(){return C3.toDegrees(this._GetGravityAngle())},MaxFallSpeed(){return this._GetMaxFallSpeed()},MovingAngle(){return C3.toDegrees(this._GetMovingAngle())},VectorX(){return this._GetVectorX()},VectorY(){return this._GetVectorY()},
+JumpSustain(){return this._GetJumpSustain()*1E3}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.LOS=class LOSBehavior extends C3.SDKBehaviorBase{constructor(opts){super(opts)}Release(){super.Release()}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.LOS.Type=class LOSType extends C3.SDKBehaviorTypeBase{constructor(behaviorType){super(behaviorType);this._obstacleTypes=[]}Release(){C3.clearArray(this._obstacleTypes);super.Release()}OnCreate(){}GetObstacleTypes(){return this._obstacleTypes}FindLOSBehavior(inst){const myType=this.GetBehaviorType();for(const behInst of inst.GetBehaviorInstances())if(behInst.GetBehaviorType()===myType)return behInst.GetSdkInstance();return null}};
+
+}
+
+{
+'use strict';const C3=self.C3;const C3X=self.C3X;const IBehaviorInstance=self.IBehaviorInstance;const OBSTACLE_MODE=0;const RANGE=1;const CONE=2;const USE_COLLISION_CELLS=3;const MODE_SOLID=0;const collisionCandidates=[];
+C3.Behaviors.LOS.Instance=class LOSInstance extends C3.SDKBehaviorInstanceBase{constructor(behInst,properties){super(behInst);this._obstacleMode=0;this._range=1E4;this._cone=C3.toRadians(360);this._useCollisionCells=true;this._ray=new C3.Ray;if(properties){this._obstacleMode=properties[OBSTACLE_MODE];this._range=properties[RANGE];this._cone=C3.toRadians(properties[CONE]);this._useCollisionCells=properties[USE_COLLISION_CELLS]}}Release(){super.Release()}SaveToJson(){return{"r":this._range,"c":this._cone,
+"om":this._obstacleMode,"ucc":this._useCollisionCells,"t":this.GetSdkType().GetObstacleTypes().map(t=>t.GetSID())}}LoadFromJson(o){this._range=o["r"];this._cone=o["c"];this._obstacleMode=o["om"]||0;this._useCollisionCells=!!o["ucc"];const obstacleTypes=this.GetSdkType().GetObstacleTypes();C3.clearArray(obstacleTypes);for(const sid of o["t"]){const objectClass=this._runtime.GetObjectClassBySID(sid);if(objectClass)obstacleTypes.push(objectClass)}}HasLOSToInstance(inst,imgPt){const uid=inst.GetUID();
+const [x,y]=inst.GetImagePoint(imgPt);const hasLOS=this.HasLOSTo(x,y);return hasLOS||this._ray.hitUid===uid}HasLOSTo(x,y){const wi=this.GetWorldInfo();let angle=wi.GetAngle();if(wi.GetWidth()<0)angle+=Math.PI;return this.HasLOSBetweenPositions(wi.GetX(),wi.GetY(),angle,x,y)}HasLOSBetweenPositions(fromX,fromY,angle,toX,toY){const range=this._range;if(C3.distanceSquared(fromX,fromY,toX,toY)>range*range)return false;const a=C3.angleTo(fromX,fromY,toX,toY);if(C3.angleDiff(angle,a)>this._cone/2)return false;
+const ray=this.CastRay(fromX,fromY,toX,toY,this._useCollisionCells);return!ray.DidCollide()}_GetCollisionCandidates(ray,useCollisionCells){if(useCollisionCells){const layer=this.GetWorldInfo().GetLayer();const collisionEngine=this._runtime.GetCollisionEngine();if(this._obstacleMode===MODE_SOLID)collisionEngine.GetSolidCollisionCandidates(layer,ray.rect,collisionCandidates);else collisionEngine.GetObjectClassesCollisionCandidates(layer,this._GetObstacleTypes(),ray.rect,collisionCandidates);return collisionCandidates}else if(this._obstacleMode===
+MODE_SOLID){const solidBehavior=this._runtime.GetSolidBehavior();if(solidBehavior)return solidBehavior.GetInstances();else return collisionCandidates}else{for(const objectClass of this._GetObstacleTypes())C3.appendArray(collisionCandidates,objectClass.GetInstances());return collisionCandidates}}_GetObstacleTypes(){return this.GetSdkType().GetObstacleTypes()}CastRay(fromX,fromY,toX,toY,useCollisionCells){const ray=this._ray.Set(fromX,fromY,toX,toY);const candidates=this._GetCollisionCandidates(ray,
+useCollisionCells);const collisionEngine=this._runtime.GetCollisionEngine();const isSolidMode=this._obstacleMode===MODE_SOLID;const selfInstance=this._inst;for(let i=0,len=candidates.length;i<len;++i){const rinst=candidates[i];if(rinst===selfInstance)continue;if(!isSolidMode||collisionEngine.IsSolidCollisionAllowed(rinst,selfInstance))collisionEngine.TestRayIntersectsInstance(rinst,ray)}ray.Complete();C3.clearArray(collisionCandidates);return ray}_GetRay(){return this._ray}_GetRayHitX(){const ray=
+this._ray;return ray.DidCollide()?ray.hitX:0}_GetRayHitY(){const ray=this._ray;return ray.DidCollide()?ray.hitY:0}_GetRayHitDistance(){const ray=this._ray;return ray.DidCollide()?ray.distance:0}_GetRayHitUID(){const ray=this._ray;return ray.DidCollide()?ray.hitUid:-1}_GetRayNormalX(length){const ray=this._ray;return ray.DidCollide()?ray.hitX+length*ray.normalX:0}_GetRayNormalY(length){const ray=this._ray;return ray.DidCollide()?ray.hitY+length*ray.normalY:0}_GetRayNormalAngle(){const ray=this._ray;
+return ray.DidCollide()?ray.hitNormal:0}_GetRayReflectionX(length){const ray=this._ray;return ray.DidCollide()?ray.hitX+length*ray.reflectionX:0}_GetRayReflectionY(length){const ray=this._ray;return ray.DidCollide()?ray.hitY+length*ray.reflectionY:0}_GetRayReflectionAngle(){const ray=this._ray;return ray.DidCollide()?Math.atan2(ray.reflectionY,ray.reflectionX):0}_SetRange(r){this._range=r}_GetRange(){return this._range}_SetConeOfView(c){this._cone=c}_GetConeOfView(){return this._cone}GetPropertyValueByIndex(index){switch(index){case OBSTACLE_MODE:return this._obstacleMode;
+case RANGE:return this._range;case CONE:return C3.toDegrees(this._cone);case USE_COLLISION_CELLS:return this._useCollisionCells}}SetPropertyValueByIndex(index,value){switch(index){case OBSTACLE_MODE:this._obstacleMode=value;break;case RANGE:this._range=value;break;case CONE:this._cone=C3.toRadians(value);break;case USE_COLLISION_CELLS:this._useCollisionCells=!!value;break}}GetDebuggerProperties(){const prefix="behaviors.los.properties";return[{title:"$"+this.GetBehaviorType().GetName(),properties:[{name:prefix+
+".range.name",value:this._GetRange(),onedit:v=>this._SetRange(v)},{name:prefix+".cone-of-view.name",value:C3.toDegrees(this._GetConeOfView()),onedit:v=>this._SetConeOfView(C3.toRadians(v))}]}]}GetScriptInterfaceClass(){return self.ILOSBehaviorInstance}};const map=new WeakMap;
+self.ILOSBehaviorInstance=class ILOSBehaviorInstance extends IBehaviorInstance{constructor(){super();const sdkInst=IBehaviorInstance._GetInitInst().GetSdkInstance();map.set(this,sdkInst);this.ray=new self.ILOSBehaviorRay(sdkInst)}set range(r){C3X.RequireFiniteNumber(r);map.get(this)._SetRange(r)}get range(){return map.get(this)._GetRange()}set coneOfView(c){C3X.RequireFiniteNumber(c);map.get(this)._SetConeOfView(c)}get coneOfView(){return map.get(this)._GetConeOfView()}hasLOStoPosition(x,y){C3X.RequireNumber(x);
+C3X.RequireNumber(y);return map.get(this).HasLOSTo(x,y)}hasLOSBetweenPositions(fromX,fromY,fromAngle,toX,toY){C3X.RequireNumber(fromX);C3X.RequireNumber(fromY);C3X.RequireNumber(fromAngle);C3X.RequireNumber(toX);C3X.RequireNumber(toY);return map.get(this).HasLOSBetweenPositions(fromX,fromY,fromAngle,toX,toY)}castRay(fromX,fromY,toX,toY,useCollisionCells=true){C3X.RequireNumber(fromX);C3X.RequireNumber(fromY);C3X.RequireNumber(toX);C3X.RequireNumber(toY);map.get(this).CastRay(fromX,fromY,toX,toY,useCollisionCells);
+return this.ray}};
+self.ILOSBehaviorRay=class ILOSBehaviorRay{constructor(sdkInst){map.set(this,sdkInst)}get didCollide(){return map.get(this)._GetRay().DidCollide()}get hitX(){return map.get(this)._GetRayHitX()}get hitY(){return map.get(this)._GetRayHitY()}get hitDistance(){return map.get(this)._GetRayHitDistance()}get hitUid(){return map.get(this)._GetRayHitUID()}getNormalX(length){C3X.RequireFiniteNumber(length);return map.get(this)._GetRayNormalX(length)}getNormalY(length){C3X.RequireFiniteNumber(length);return map.get(this)._GetRayNormalY(length)}get normalAngle(){return map.get(this)._GetRayNormalAngle()}getReflectionX(length){C3X.RequireFiniteNumber(length);
+return map.get(this)._GetRayReflectionX(length)}getReflectionY(length){C3X.RequireFiniteNumber(length);return map.get(this)._GetRayReflectionY(length)}get reflectionAngle(){return map.get(this)._GetRayReflectionAngle()}};
+
+}
+
+{
+'use strict';const C3=self.C3;const lToPick=new Set;const rToPick=new Set;
+C3.Behaviors.LOS.Cnds={HasLOSToPosition(x,y){return this.HasLOSTo(x,y)},RayIntersected(){return this._ray.DidCollide()},HasLOSBetweenPositions(fromX,fromY,fromAngle,toX,toY){return this.HasLOSBetweenPositions(fromX,fromY,C3.toRadians(fromAngle),toX,toY)},HasLOSToObject(objectClass,imgPt){if(!objectClass)return false;const currentCondition=this._runtime.GetCurrentCondition();const isOrBlock=currentCondition.GetEventBlock().IsOrBlock();const runtime=currentCondition.GetRuntime();const lsol=currentCondition.GetObjectClass().GetCurrentSol();
+const rsol=objectClass.GetCurrentSol();let linstances=lsol.GetInstances();let rinstances=rsol.GetInstances();if(lsol.IsSelectAll())C3.clearArray(lsol._GetOwnElseInstances());else if(isOrBlock)if(runtime.IsCurrentConditionFirst()&&!lsol._GetOwnElseInstances().length&&lsol._GetOwnInstances().length)linstances=lsol._GetOwnInstances();else linstances=lsol._GetOwnElseInstances();if(rsol.IsSelectAll())C3.clearArray(rsol._GetOwnElseInstances());else if(isOrBlock)if(runtime.IsCurrentConditionFirst()&&!rsol._GetOwnElseInstances().length&&
+rsol._GetOwnInstances().length)rinstances=rsol._GetOwnInstances();else rinstances=rsol._GetOwnElseInstances();const isInverted=currentCondition.IsInverted();const sdkType=this.GetSdkType();for(const linst of linstances){let pick=false;const losBeh=sdkType.FindLOSBehavior(linst);if(rinstances.length===0){if(isInverted)pick=true}else for(const rinst of rinstances)if(linst!==rinst&&C3.xor(losBeh.HasLOSToInstance(rinst,imgPt),isInverted)){pick=true;rToPick.add(rinst)}if(pick)lToPick.add(linst)}if(isOrBlock){if(linstances===
+lsol._GetOwnElseInstances())lsol.TransferElseInstancesToOwn(lToPick);else{lsol.AddElseInstances(lToPick,linstances);lsol.SetSetPicked(lToPick)}if(rinstances===rsol._GetOwnElseInstances())rsol.TransferElseInstancesToOwn(rToPick);else{rsol.AddElseInstances(rToPick,rinstances);rsol.SetSetPicked(rToPick)}}else{lsol.SetSetPicked(lToPick);rsol.SetSetPicked(rToPick)}lToPick.clear();rToPick.clear();return lsol.HasAnyInstances()}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.LOS.Acts={SetRange(r){this._SetRange(r)},SetCone(c){this._SetConeOfView(C3.toRadians(c))},CastRay(fromX,fromY,toX,toY,useCollisionCells){this.CastRay(fromX,fromY,toX,toY,useCollisionCells)},AddObstacle(objectClass){const obstacleTypes=this.GetSdkType().GetObstacleTypes();if(obstacleTypes.includes(objectClass))return;for(const t of obstacleTypes)if(t.IsFamily()&&t.FamilyHasMember(objectClass))return;obstacleTypes.push(objectClass)},ClearObstacles(){C3.clearArray(this.GetSdkType().GetObstacleTypes())}};
+
+}
+
+{
+'use strict';const C3=self.C3;
+C3.Behaviors.LOS.Exps={Range(){return this._GetRange()},ConeOfView(){return C3.toDegrees(this._GetConeOfView())},HitX(){return this._GetRayHitX()},HitY(){return this._GetRayHitY()},HitDistance(){return this._GetRayHitDistance()},HitUID(){return this._GetRayHitUID()},NormalX(length){return this._GetRayNormalX(length)},NormalY(length){return this._GetRayNormalY(length)},NormalAngle(){return C3.toDegrees(this._GetRayNormalAngle())},ReflectionX(length){return this._GetRayReflectionX(length)},ReflectionY(length){return this._GetRayReflectionY(length)},
+ReflectionAngle(){return C3.toDegrees(this._GetRayReflectionAngle())}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.Turret=class TurretBehavior extends C3.SDKBehaviorBase{constructor(opts){super(opts)}Release(){super.Release()}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.Turret.Type=class TurretType extends C3.SDKBehaviorTypeBase{constructor(behaviorType){super(behaviorType);this._targetTypes=[]}Release(){C3.clearArray(this._targetTypes);super.Release()}OnCreate(){}GetTargetTypes(){return this._targetTypes}};
+
+}
+
+{
+'use strict';const C3=self.C3;const RANGE=0;const RATE_OF_FIRE=1;const ROTATE=2;const ROTATE_SPEED=3;const TARGET_MODE=4;const PREDICTIVE_AIM=5;const PROJECTILE_SPEED=6;const USE_COLLISION_CELLS=7;const ENABLED=8;const tmpRect=C3.New(C3.Rect);const candidates=[];
+C3.Behaviors.Turret.Instance=class TurretInstance extends C3.SDKBehaviorInstanceBase{constructor(behInst,properties){super(behInst);this._range=300;this._rateOfFire=1;this._isRotateEnabled=true;this._rotateSpeed=C3.toRadians(180);this._targetMode=0;this._predictiveAim=false;this._projectileSpeed=500;this._useCollisionCells=true;this._isEnabled=true;this._lastCheckTime=0;this._fireTimeCount=0;this._currentTarget=null;this._loadTargetUid=-1;this._oldTargetX=0;this._oldTargetY=0;this._lastSpeeds=[0,
+0,0,0];this._speedsCount=0;this._firstTickWithTarget=true;if(properties){this._range=properties[RANGE];this._rateOfFire=properties[RATE_OF_FIRE];this._isRotateEnabled=!!properties[ROTATE];this._rotateSpeed=C3.toRadians(properties[ROTATE_SPEED]);this._targetMode=properties[TARGET_MODE];this._predictiveAim=!!properties[PREDICTIVE_AIM];this._projectileSpeed=properties[PROJECTILE_SPEED];this._useCollisionCells=!!properties[USE_COLLISION_CELLS];this._isEnabled=!!properties[ENABLED]}this._fireTimeCount=
+this._rateOfFire;const rt=this._runtime.Dispatcher();this._disposables=new C3.CompositeDisposable(C3.Disposable.From(rt,"instancedestroy",e=>this._OnInstanceDestroyed(e.instance)),C3.Disposable.From(rt,"afterload",e=>this._OnAfterLoad()));if(this._isEnabled)this._StartTicking()}Release(){this._currentTarget=null;super.Release()}_OnAfterLoad(){if(this._loadTargetUid===-1)this._currentTarget=null;else this._currentTarget=this._runtime.GetInstanceByUID(this._loadTargetUid)}_OnInstanceDestroyed(inst){if(this._currentTarget===
+inst)this._currentTarget=null}SaveToJson(){return{"r":this._range,"rof":this._rateOfFire,"re":this._isRotateEnabled,"rs":this._rotateSpeed,"tm":this._targetMode,"pa":this._predictiveAim,"ps":this._projectileSpeed,"ucc":this._useCollisionCells,"e":this._isEnabled,"lct":this._lastCheckTime,"ftc":this._fireTimeCount,"t":this._currentTarget?this._currentTarget.GetUID():-1,"ox":this._oldTargetX,"oy":this._oldTargetY,"ls":this._lastSpeeds,"sc":this._speedsCount,"targs":this.GetSdkType().GetTargetTypes().map(t=>
+t.GetSID())}}LoadFromJson(o){this._range=o["r"];this._rateOfFire=o["rof"];this._isRotateEnabled=o["re"];this._rotateSpeed=o["rs"];this._targetMode=o["tm"];this._predictiveAim=o["pa"];this._projectileSpeed=o["ps"];this._useCollisionCells=o["ucc"];this._SetEnabled(o["e"]);this._lastCheckTime=o["lct"];this._fireTimeCount=o["ftc"];this._loadTargetUid=o["t"];this._oldTargetX=o["ox"];this._oldTargetY=o["oy"];this._lastSpeeds=o["ls"];this._speedsCount=o["sc"];const targetTypes=this.GetSdkType().GetTargetTypes();
+C3.clearArray(targetTypes);for(const sid of o["targs"]){const objectClass=this._runtime.GetObjectClassBySID(sid);if(objectClass)targetTypes.push(objectClass)}}AddSpeed(s){if(this._speedsCount<4){this._lastSpeeds[this._speedsCount]=s;this._speedsCount++}else{this._lastSpeeds.shift();this._lastSpeeds.push(s)}}GetSpeed(){let ret=0;for(let i=0;i<this._speedsCount;++i)ret+=this._lastSpeeds[i];return ret/this._speedsCount}IsInRange(inst){const myWi=this.GetWorldInfo();const otherWi=inst.GetWorldInfo();
+const dx=otherWi.GetX()-myWi.GetX();const dy=otherWi.GetY()-myWi.GetY();return dx*dx+dy*dy<=this._range*this._range}LookForFirstTarget(){const wi=this.GetWorldInfo();const targetTypes=this.GetSdkType().GetTargetTypes();const collisionEngine=this._runtime.GetCollisionEngine();if(this._useCollisionCells){tmpRect.set(wi.GetX()-this._range,wi.GetY()-this._range,wi.GetX()+this._range,wi.GetY()+this._range);collisionEngine.GetObjectClassesCollisionCandidates(null,targetTypes,tmpRect,candidates)}else for(const objectClass of targetTypes)C3.appendArray(candidates,
+objectClass.GetInstances());for(const rinst of candidates)if(this.IsInRange(rinst)){this._currentTarget=rinst;C3.clearArray(candidates);return}C3.clearArray(candidates)}LookForNearestTarget(){const wi=this.GetWorldInfo();const targetTypes=this.GetSdkType().GetTargetTypes();const collisionEngine=this._runtime.GetCollisionEngine();const myX=wi.GetX();const myY=wi.GetY();let closest=this._range*this._range;this._currentTarget=null;if(this._useCollisionCells){tmpRect.set(myX-this._range,myY-this._range,
+myX+this._range,myY+this._range);collisionEngine.GetObjectClassesCollisionCandidates(null,targetTypes,tmpRect,candidates)}else for(const objectClass of targetTypes)C3.appendArray(candidates,objectClass.GetInstances());for(const rinst of candidates){const otherWi=rinst.GetWorldInfo();const dx=myX-otherWi.GetX();const dy=myY-otherWi.GetY();const dist=dx*dx+dy*dy;if(dist<closest){this._currentTarget=rinst;closest=dist}}C3.clearArray(candidates)}_OnTargetAcquired(){this._speedsCount=0;this._firstTickWithTarget=
+true;const targetWi=this._currentTarget.GetWorldInfo();this._oldTargetX=targetWi.GetX();this._oldTargetY=targetWi.GetY();this.Trigger(C3.Behaviors.Turret.Cnds.OnTargetAcquired)}Tick(){if(!this._isEnabled)return;const dt=this._runtime.GetDt(this._inst);const nowTime=this._runtime.GetGameTime();const wi=this.GetWorldInfo();if(this._currentTarget&&!this.IsInRange(this._currentTarget)){this._currentTarget=null;this._speedsCount=0;this._firstTickWithTarget=true}if(nowTime>=this._lastCheckTime+.1){this._lastCheckTime=
+nowTime;if(this._targetMode===0&&!this._currentTarget){this.LookForFirstTarget();if(this._currentTarget)this._OnTargetAcquired()}else if(this._targetMode===1){const oldTarget=this._currentTarget;this.LookForNearestTarget();if(this._currentTarget&&this._currentTarget!==oldTarget)this._OnTargetAcquired()}}this._fireTimeCount+=dt;if(this._currentTarget){let targetWi=this._currentTarget.GetWorldInfo();let targetAngle=C3.angleTo(wi.GetX(),wi.GetY(),targetWi.GetX(),targetWi.GetY());if(this._predictiveAim){const Gx=
+wi.GetX();const Gy=wi.GetY();const Px=targetWi.GetX();const Py=targetWi.GetY();const h=C3.angleTo(Px,Py,this._oldTargetX,this._oldTargetY);if(!this._firstTickWithTarget)this.AddSpeed(C3.distanceTo(Px,Py,this._oldTargetX,this._oldTargetY)/dt);const s=this.GetSpeed();const q=Py-Gy;const r=Px-Gx;const w=(s*Math.sin(h)*(Gx-Px)-s*Math.cos(h)*(Gy-Py))/this._projectileSpeed;const a=Math.asin(w/Math.sqrt(q*q+r*r))-Math.atan2(q,-r)+Math.PI;if(!isNaN(a))targetAngle=a}if(this._isRotateEnabled){wi.SetAngle(C3.angleRotate(wi.GetAngle(),
+targetAngle,this._rotateSpeed*dt));wi.SetBboxChanged()}if(this._fireTimeCount>=this._rateOfFire&&(!this._isRotateEnabled||C3.toDegrees(C3.angleDiff(wi.GetAngle(),targetAngle))<=.1)&&(!this._predictiveAim||this._speedsCount>=4)){this._fireTimeCount-=this._rateOfFire;if(this._fireTimeCount>=this._rateOfFire)this._fireTimeCount=0;this.Trigger(C3.Behaviors.Turret.Cnds.OnShoot)}if(this._currentTarget){targetWi=this._currentTarget.GetWorldInfo();this._oldTargetX=targetWi.GetX();this._oldTargetY=targetWi.GetY()}this._firstTickWithTarget=
+false}if(this._fireTimeCount>this._rateOfFire)this._fireTimeCount=this._rateOfFire}GetPropertyValueByIndex(index){switch(index){case RANGE:return this._range;case RATE_OF_FIRE:return this._rateOfFire;case ROTATE:return this._isRotateEnabled;case ROTATE_SPEED:return C3.toDegrees(this._rotateSpeed);case TARGET_MODE:return this._targetMode;case PREDICTIVE_AIM:return this._predictiveAim;case PROJECTILE_SPEED:return this._projectileSpeed;case USE_COLLISION_CELLS:return this._useCollisionCells;case ENABLED:return this._isEnabled}}SetPropertyValueByIndex(index,
+value){switch(index){case RANGE:this._range=value;break;case RATE_OF_FIRE:this._rateOfFire=value;break;case ROTATE:this._isRotateEnabled=!!value;break;case ROTATE_SPEED:if(!this._isRotateEnabled)return;this._rotateSpeed=C3.toRadians(value);break;case TARGET_MODE:this._targetMode=value;break;case PREDICTIVE_AIM:this._predictiveAim=!!value;break;case PROJECTILE_SPEED:if(!this._predictiveAim)return;this._projectileSpeed=value;break;case USE_COLLISION_CELLS:this._useCollisionCells=!!value;break;case ENABLED:this._SetEnabled(value);
+break}}_SetEnabled(e){this._isEnabled=!!e;if(this._isEnabled)this._StartTicking();else this._StopTicking()}GetDebuggerProperties(){const prefix="behaviors.turret";return[{title:"$"+this.GetBehaviorType().GetName(),properties:[{name:prefix+".properties.range.name",value:this._range,onedit:v=>this._range=v},{name:prefix+".properties.rate-of-fire.name",value:this._rateOfFire,onedit:v=>this._rateOfFire=v},{name:prefix+".properties.rotate-speed.name",value:C3.toDegrees(this._rotateSpeed),onedit:v=>this._rotateSpeed=
+C3.toRadians(v)},{name:prefix+".properties.predictive-aim.name",value:this._predictiveAim,onedit:v=>this._predictiveAim=v},{name:prefix+".properties.projectile-speed.name",value:this._projectileSpeed,onedit:v=>this._projectileSpeed=v},{name:prefix+".debugger.has-target",value:!!this._currentTarget},{name:prefix+".debugger.target-uid",value:this._currentTarget?this._currentTarget.GetUID():0},{name:prefix+".properties.enabled.name",value:this._isEnabled,onedit:v=>this._SetEnabled(v)}]}]}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.Turret.Cnds={HasTarget(){return!!this._currentTarget},OnShoot(){return true},OnTargetAcquired(){return true},IsEnabled(){return this._isEnabled}};
+
+}
+
+{
+'use strict';const C3=self.C3;
+C3.Behaviors.Turret.Acts={AcquireTarget(objectClass){if(!objectClass)return;const instances=objectClass.GetCurrentSol().GetInstances();for(const inst of instances)if(this._currentTarget!==inst&&this.IsInRange(inst)){this._currentTarget=inst;this._OnTargetAcquired();break}},AddTarget(objectClass){const targetTypes=this.GetSdkType().GetTargetTypes();if(targetTypes.includes(objectClass))return;for(const t of targetTypes)if(t.IsFamily()&&t.FamilyHasMember(objectClass))return;targetTypes.push(objectClass)},
+ClearTargets(){C3.clearArray(this.GetSdkType().GetTargetTypes())},UnacquireTarget(){this._currentTarget=null;this._speedsCount=0;this._firstTickWithTarget=true},SetEnabled(e){this._SetEnabled(e!==0)},SetRange(r){this._range=r},SetRateOfFire(r){this._rateOfFire=r},SetRotate(r){this._isRotateEnabled=r!==0},SetRotateSpeed(r){this._rotateSpeed=C3.toRadians(r)},SetTargetMode(m){this._targetMode=m},SetPredictiveAim(p){this._predictiveAim=p!==0},SetProjectileSpeed(s){this._projectileSpeed=s}};
+
+}
+
+{
+'use strict';const C3=self.C3;C3.Behaviors.Turret.Exps={TargetUID(){return this._currentTarget?this._currentTarget.GetUID():0},Range(){return this._range},RateOfFire(){return this._rateOfFire},RotateSpeed(){return C3.toDegrees(this._rotateSpeed)}};
+
+}
+
+{
 const C3 = self.C3;
 self.C3_GetObjectRefTable = function () {
 	return [
@@ -3886,11 +3891,10 @@ self.C3_GetObjectRefTable = function () {
 		C3.Behaviors.Bullet,
 		C3.Behaviors.destroy,
 		C3.Plugins.Mouse,
-		C3.Plugins.Shape3D,
-		C3.Plugins.SVGPicture,
+		C3.Behaviors.Platform,
+		C3.Behaviors.LOS,
+		C3.Behaviors.Turret,
 		C3.Plugins.Text,
-		C3.Plugins.TextBox,
-		C3.Plugins.Button,
 		C3.Plugins.Spritefont2,
 		C3.Plugins.System.Cnds.EveryTick,
 		C3.Plugins.Sprite.Acts.SetTowardPosition,
@@ -3898,8 +3902,25 @@ self.C3_GetObjectRefTable = function () {
 		C3.Plugins.Mouse.Exps.Y,
 		C3.Plugins.Mouse.Cnds.OnClick,
 		C3.Plugins.Sprite.Acts.Spawn,
-		C3.Plugins.Mouse.Cnds.OnObjectClicked,
-		C3.Plugins.System.Acts.GoToLayout
+		C3.Plugins.Sprite.Acts.SetCollisions,
+		C3.Plugins.Sprite.Cnds.CompareInstanceVar,
+		C3.Behaviors.Platform.Acts.SimulateControl,
+		C3.Plugins.Sprite.Acts.SetMirrored,
+		C3.Plugins.Sprite.Cnds.OnCollision,
+		C3.Plugins.Sprite.Acts.SetInstanceVar,
+		C3.Plugins.System.Cnds.Else,
+		C3.Plugins.Sprite.Cnds.OnDestroyed,
+		C3.Plugins.System.Acts.CreateObject,
+		C3.Plugins.System.Acts.AddVar,
+		C3.Plugins.Text.Acts.SetText,
+		C3.Plugins.System.Cnds.OnLayoutStart,
+		C3.Plugins.System.Acts.SetVar,
+		C3.Plugins.System.Cnds.Every,
+		C3.Plugins.System.Cnds.CompareVar,
+		C3.Plugins.System.Acts.SubVar,
+		C3.Plugins.System.Acts.GoToLayout,
+		C3.Plugins.Sprite.Acts.Destroy,
+		C3.Plugins.Mouse.Cnds.OnObjectClicked
 	];
 };
 self.C3_JsPropNameTable = [
@@ -3911,33 +3932,43 @@ self.C3_JsPropNameTable = [
 	{Bullet: 0},
 	{DestroyOutsideLayout: 0},
 	{Mouse: 0},
-	{Sprite: 0},
+	{action: 0},
+	{Platform: 0},
+	{LineOfSight: 0},
+	{Turret: 0},
 	{Enemy: 0},
-	{Enemy2: 0},
-	{Enemy3: 0},
-	{Enemy4: 0},
-	{Enemy5: 0},
-	{Sprite2: 0},
-	{Sprite3: 0},
-	{Sprite4: 0},
-	{"3DShape": 0},
-	{SVGPicture: 0},
-	{"3DShape2": 0},
-	{wall: 0},
-	{wall2: 0},
+	{friendly: 0},
 	{Text: 0},
-	{TextInput: 0},
-	{Button: 0},
-	{Sprite5: 0},
-	{title: 0},
 	{start: 0},
 	{Text2: 0},
 	{Text3: 0},
 	{Text4: 0},
 	{Text5: 0},
-	{Sprite6: 0},
 	{PLAY: 0},
-	{Text6: 0}
+	{Text6: 0},
+	{EdgeMarker: 0},
+	{friendly2: 0},
+	{friendly3: 0},
+	{Text7: 0},
+	{Clock: 0},
+	{Score: 0},
+	{wall1: 0},
+	{wall2: 0},
+	{wall3: 0},
+	{GameOver: 0},
+	{endscore: 0},
+	{endenemies: 0},
+	{endcivi: 0},
+	{enemyKills: 0},
+	{civiKills: 0},
+	{finalScore: 0},
+	{Bullet2: 0},
+	{retry: 0},
+	{TITLE: 0},
+	{TotalTime: 0},
+	{TotalScore: 0},
+	{TotalEnemies: 0},
+	{TotalCivi: 0}
 ];
 }
 
@@ -4043,7 +4074,22 @@ self.C3_ExpressionFuncs = [
 			return () => f0();
 		},
 		() => 0,
-		() => 1
+		() => 1,
+		() => "right",
+		() => "left",
+		() => 410,
+		() => 163,
+		() => 5,
+		p => {
+			const v0 = p._GetNode(0).GetVar();
+			return () => v0.GetValue();
+		},
+		() => 60,
+		() => 10,
+		() => 414,
+		() => 47,
+		() => 198,
+		() => 627
 ];
 
 
